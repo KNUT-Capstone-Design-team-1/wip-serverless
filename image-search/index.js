@@ -76,7 +76,13 @@ async function requestDLServer(req) {
   
     return result;
   } catch (e) {
-    console.log(e.stack || e);
+    if (e instanceof AggregateError) {
+      for (const err of e.errors) {
+        console.log(err.stack || e);
+      }
+    } else {
+      console.log(e.stack || e);
+    }
 
     return { success: false, message: 'proxy error' };
   }
