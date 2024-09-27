@@ -1,5 +1,6 @@
 require("dotenv").config();
 const functions = require("@google-cloud/functions-framework");
+const { GoogleAuth } = require("google-auth-library");
 const dayjs = require("dayjs");
 const utc = require("dayjs/plugin/utc");
 const fs = require("fs");
@@ -64,17 +65,18 @@ function authenticate(req) {
  */
 async function requestDLServer(req) {
   try {
-    const dlServerURL = process.env.GOOGLE_CLOUD_DL_SERVER_URL;
-
-    const { base64 } = req.body;
+    const googleAuthInstance = new GoogleAuth({
+      keyFilename: path.join(__dirname, "./google_cloud_service_key.json"),
+    });
   
-    const result = await axios.post(
-      `${dlServerURL}`,
-      { base64 },
-      { headers: { "Content-Type": "application/json" } }
-    );
+    const result = await googleAuthInstance.request({
+      url: process.env.GOOGLE_CLOUD_DL_SERVER_URL,
+      method: "POST",
+      data: { base64: req.body.base64 },
+      headers: { "Content-Type": "application/json" },
+    });
   
-    return result;
+    return result.data;
   } catch (e) {
     if (e.errors) {
       for (const err of e.errors) {
