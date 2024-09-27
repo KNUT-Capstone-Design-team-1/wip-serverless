@@ -1,2 +1,3 @@
 node_modules
 rsa_prv_key
+.env
