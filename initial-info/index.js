@@ -42,7 +42,7 @@ function authenticateRSA(token) {
  * @returns 
  */
 function getInitInfo(req) {
-  const token = getToken(req.headers.Authorization);
+  const token = getToken(req.headers.authorization);
   if (!token) {
     return null;
   }
