@@ -67,10 +67,11 @@ async function requestDLServer(req) {
 
   const { base64 } = req.body;
 
-  const result = await axios.post(dlServerURL, {
-    data: { base64 },
-    headers: { "Content-Type": "application/json" },
-  });
+  const result = await axios.post(
+    dlServerURL,
+    { base64 },
+    { headers: { "Content-Type": "application/json" } }
+  );
 
   return result;
 }
