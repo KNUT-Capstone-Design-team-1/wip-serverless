@@ -63,17 +63,23 @@ function authenticate(req) {
  * @returns
  */
 async function requestDLServer(req) {
-  const dlServerURL = process.env.GOOGLE_CLOUD_DL_SERVER_URL;
+  try {
+    const dlServerURL = process.env.GOOGLE_CLOUD_DL_SERVER_URL;
 
-  const { base64 } = req.body;
+    const { base64 } = req.body;
+  
+    const result = await axios.post(
+      dlServerURL,
+      { base64 },
+      { headers: { "Content-Type": "application/json" } }
+    );
+  
+    return result;
+  } catch (e) {
+    console.log(e.stack || e);
 
-  const result = await axios.post(
-    dlServerURL,
-    { base64 },
-    { headers: { "Content-Type": "application/json" } }
-  );
-
-  return result;
+    return { success: false, message: 'proxy error' };
+  }
 }
 
 functions.http("imageSearch", async (req, res) => {
