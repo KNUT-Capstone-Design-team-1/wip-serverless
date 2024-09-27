@@ -7,7 +7,7 @@ const NodeRSA = require("node-rsa");
 
 /**
  * auth header로 부터 토큰을 추출
- * @param {String} authHeader req.authenticate
+ * @param {String} authHeader
  * @returns
  */
 function getToken(authHeader) {
@@ -42,7 +42,7 @@ function authenticateRSA(token) {
  * @returns 
  */
 function getInitInfo(req) {
-  const token = getToken(req.headers.authenticate);
+  const token = getToken(req.headers.Authorization);
   if (!token) {
     return null;
   }
