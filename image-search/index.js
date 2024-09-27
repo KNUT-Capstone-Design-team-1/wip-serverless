@@ -69,19 +69,19 @@ async function requestDLServer(req) {
     const { base64 } = req.body;
   
     const result = await axios.post(
-      dlServerURL,
+      `${dlServerURL}`,
       { base64 },
       { headers: { "Content-Type": "application/json" } }
     );
   
     return result;
   } catch (e) {
-    if (e instanceof AggregateError) {
+    if (e.errors) {
       for (const err of e.errors) {
-        console.log(err.stack || e);
+        console.log('Aggergate Error', err.stack || e);
       }
     } else {
-      console.log(e.stack || e);
+      console.log('Standard Error', e.stack || e);
     }
 
     return { success: false, message: 'proxy error' };
