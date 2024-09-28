@@ -1,6 +1,5 @@
 require("dotenv").config();
 const functions = require("@google-cloud/functions-framework");
-const { GoogleAuth } = require("google-auth-library");
 const dayjs = require("dayjs");
 const utc = require("dayjs/plugin/utc");
 const fs = require("fs");
@@ -65,28 +64,23 @@ function authenticate(req) {
  */
 async function requestDLServer(req) {
   try {
-    const googleAuthInstance = new GoogleAuth({
-      keyFilename: path.join(__dirname, "./google_cloud_service_key.json"),
-    });
+    const result = await axios.post(
+      process.env.GOOGLE_CLOUD_DL_SERVER_URL,
+      { base64: req.body.base64 },
+      { headers: { "Content-Type": "application/json" } }
+    );
   
-    const result = await googleAuthInstance.request({
-      url: process.env.GOOGLE_CLOUD_DL_SERVER_URL,
-      method: "POST",
-      data: { base64: req.body.base64 },
-      headers: { "Content-Type": "application/json" },
-    });
-  
-    return result.data;
+    return result;
   } catch (e) {
     if (e.errors) {
-      for (const err of e.errors) {
-        console.log('Aggergate Error', err.stack || e);
+      for (const e1 of e.errors) {
+        console.log('Aggergate DLServer Error', e1.stack || e1);
       }
     } else {
-      console.log('Standard Error', e.stack || e);
+      console.log('Standard DL Server Error', e.stack || e);
     }
 
-    return { success: false, message: 'proxy error' };
+    throw e;
   }
 }
 
@@ -100,7 +94,7 @@ functions.http("imageSearch", async (req, res) => {
 
       const searchResult = await requestDLServer(req);
 
-      res.status(200).json(searchResult);
+      res.status(searchResult.status).json(searchResult.data);
       break;
     }
 

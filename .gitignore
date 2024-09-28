@@ -1,4 +1,3 @@
 node_modules
 rsa_prv_key
 .env
-google_cloud_service_key.json
