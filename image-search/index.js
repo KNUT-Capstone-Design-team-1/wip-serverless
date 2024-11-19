@@ -6,7 +6,6 @@ const fs = require("fs");
 const path = require("path");
 const NodeRSA = require("node-rsa");
 const { GoogleAuth } = require("google-auth-library");
-const path = require("path");
 
 /**
  * auth header로 부터 토큰을 추출
