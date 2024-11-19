@@ -5,7 +5,8 @@ const utc = require("dayjs/plugin/utc");
 const fs = require("fs");
 const path = require("path");
 const NodeRSA = require("node-rsa");
-const axios = require("axios");
+const { GoogleAuth } = require("google-auth-library");
+const path = require("path");
 
 /**
  * auth header로 부터 토큰을 추출
@@ -58,26 +59,45 @@ function authenticate(req) {
 }
 
 /**
+ * 구글 서비스 인스턴스를 반환
+ * @param {String} serviceURL
+ * @returns
+ */
+async function getGoogleIdTokenClient(serviceURL) {
+  const googleAuth = new GoogleAuth({
+    keyFilename: path.join(__dirname, "./google_service_key.json"),
+  });
+
+  return googleAuth.getIdTokenClient(serviceURL);
+}
+
+/**
  * 딥러닝 서버에 요청
  * @param {Request} req
  * @returns
  */
 async function requestDLServer(req) {
   try {
-    const result = await axios.post(
-      process.env.GOOGLE_CLOUD_DL_SERVER_URL,
-      { base64: req.body.base64 },
-      { headers: { "Content-Type": "application/json" } }
-    );
-  
-    return result;
+    const { base64 } = req.body;
+    const serviceURL = process.env.GOOGLE_CLOUD_DL_SERVER_URL;
+
+    const client = await getGoogleIdTokenClient(serviceURL);
+
+    const result = client.request({
+      url: serviceURL,
+      method: "POST",
+      data: { base64 },
+      headers: { "Content-Type": "application/json" },
+    });
+
+    return result.data;
   } catch (e) {
     if (e.errors) {
       for (const e1 of e.errors) {
-        console.log('Aggergate DLServer Error', e1.stack || e1);
+        console.log("Aggergate DLServer Error", e1.stack || e1);
       }
     } else {
-      console.log('Standard DL Server Error', e.stack || e);
+      console.log("Standard DL Server Error", e.stack || e);
     }
 
     throw e;
