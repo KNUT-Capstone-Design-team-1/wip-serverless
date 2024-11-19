@@ -89,7 +89,7 @@ async function requestDLServer(req) {
       headers: { "Content-Type": "application/json" },
     });
 
-    return result.data;
+    return result;
   } catch (e) {
     if (e.errors) {
       for (const e1 of e.errors) {
