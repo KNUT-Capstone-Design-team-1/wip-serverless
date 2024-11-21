@@ -1,0 +1,86 @@
+apiVersion: serving.knative.dev/v1
+kind: Revision
+metadata:
+  name: image-search-00058-j7t
+  namespace: '275975834834'
+  selfLink: /apis/serving.knative.dev/v1/namespaces/275975834834/revisions/image-search-00058-j7t
+  uid: 67d4c414-c92e-45e7-9528-93dc087ec887
+  resourceVersion: AAYna3CpRLY
+  generation: 1
+  creationTimestamp: '2024-11-21T12:30:59.855482Z'
+  labels:
+    client.knative.dev/nonce: 129e0fea-d0cc-4c8f-9c1a-eea294eaeded
+    serving.knative.dev/configuration: image-search
+    serving.knative.dev/configurationGeneration: '58'
+    serving.knative.dev/service: image-search
+    serving.knative.dev/serviceUid: a755b647-ae5c-4ff6-8247-51c7b5e5a3c4
+    goog-managed-by: cloudfunctions
+    goog-cloudfunctions-runtime: nodejs20
+    cloud.googleapis.com/location: asia-northeast1
+    serving.knative.dev/route: image-search
+    run.googleapis.com/startupProbeType: Custom
+  annotations:
+    run.googleapis.com/client-name: cloud-console
+    run.googleapis.com/startup-cpu-boost: 'false'
+    cloudfunctions.googleapis.com/trigger-type: HTTP_TRIGGER
+    serving.knative.dev/creator: knut043mbm@gmail.com
+    run.googleapis.com/execution-environment: gen1
+    run.googleapis.com/operation-id: ebc56b1d-1557-48f1-91b9-e7241d34083c
+    autoscaling.knative.dev/maxScale: '5'
+  ownerReferences:
+  - kind: Configuration
+    name: image-search
+    uid: 74f3d5c6-cfb5-411a-96ce-4be1a0629ae5
+    apiVersion: serving.knative.dev/v1
+    controller: true
+    blockOwnerDeletion: true
+spec:
+  containerConcurrency: 1000
+  timeoutSeconds: 60
+  serviceAccountName: image-search@what-is-pill.iam.gserviceaccount.com
+  containers:
+  - name: worker
+    image: us-docker.pkg.dev/cloudrun/container/hello@sha256:811b577bc868e6e61e235ada8f14c6c53f6e360a2f34ed21637629d00831bea9
+    ports:
+    - name: http1
+      containerPort: 8080
+    env:
+    - name: LOG_EXECUTION_ID
+      value: 'true'
+    resources:
+      limits:
+        cpu: 1000m
+        memory: 256Mi
+    startupProbe:
+      timeoutSeconds: 60
+      periodSeconds: 240
+      failureThreshold: 1
+      tcpSocket:
+        port: 8080
+status:
+  observedGeneration: 1
+  conditions:
+  - type: Ready
+    status: 'True'
+    lastTransitionTime: '2024-11-21T12:31:04.138138Z'
+  - type: Active
+    status: 'True'
+    lastTransitionTime: '2024-11-21T12:31:04.204782Z'
+    severity: Info
+  - type: ContainerHealthy
+    status: 'True'
+    message: Container became healthy.
+    lastTransitionTime: '2024-11-21T12:31:04.086181Z'
+  - type: ContainerReady
+    status: 'True'
+    message: Container image import completed.
+    lastTransitionTime: '2024-11-21T12:31:01.082154Z'
+  - type: ResourcesAvailable
+    status: 'True'
+    message: Revision deployment finished in 2.624378s. Checking container health.
+    lastTransitionTime: '2024-11-21T12:31:03.697940Z'
+  logUrl: https://console.cloud.google.com/logs/viewer?project=what-is-pill&resource=cloud_run_revision/service_name/image-search/revision_name/image-search-00058-j7t&advancedFilter=resource.type%3D%22cloud_run_revision%22%0Aresource.labels.service_name%3D%22image-search%22%0Aresource.labels.revision_name%3D%22image-search-00058-j7t%22
+  imageDigest: us-docker.pkg.dev/cloudrun/container/hello@sha256:811b577bc868e6e61e235ada8f14c6c53f6e360a2f34ed21637629d00831bea9
+  containerStatuses:
+  - name: worker
+    imageDigest: us-docker.pkg.dev/cloudrun/container/hello@sha256:811b577bc868e6e61e235ada8f14c6c53f6e360a2f34ed21637629d00831bea9
