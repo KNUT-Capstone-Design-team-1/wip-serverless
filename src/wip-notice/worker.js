@@ -34,9 +34,6 @@ async function requestNoticesIdxApi(request, env) {
   }
 
   switch (request.method.toUpperCase()) {
-    case "GET":
-      return NoticesIdxApiHandler.readNoticeDetail(idx, env);
-
     case "PUT":
       return NoticesIdxApiHandler.updateNotice(idx, request, env);
 

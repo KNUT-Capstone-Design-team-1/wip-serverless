@@ -1,13 +1,3 @@
-async function readNoticeDetail(idx, env) {
-    const sql = `SELECT idx, title, contents, mustRead, createDate, updateDate
-                 FROM Notices
-                 WHERE idx = ?`;
-
-    const notices = await env.DB.prepare(sql).bind(idx);
-
-    return Response.json(notices);
-}
-
 async function updateNotice(idx, request, env) {
     const contentType = request.headers.get("Content-Type");
 
@@ -50,4 +40,4 @@ async function deleteNotice(idx, env) {
     return new Response("Success");
 }
 
-module.exports = { readNoticeDetail, updateNotice, deleteNotice };
+module.exports = { updateNotice, deleteNotice };

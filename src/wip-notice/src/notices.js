@@ -39,7 +39,8 @@ async function readNotices(request, env) {
         return new Response("Content Too Large", { status: 413 });
     }
 
-    const sql = `SELECT idx, title, mustRead FROM Notices
+    const sql = `SELECT idx, title, contents, mustRead, createDate, updateDate
+                 FROM Notices
                  ${mustRead ? "WHERE mustRead = 1" : ""}
                  ORDER BY idx LIMIT ?,?`;
 
