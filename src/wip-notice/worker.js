@@ -7,8 +7,8 @@
  *
  * Learn more at https://developers.cloudflare.com/workers/
  */
-const NoticesApiHandler = require('./src/notices');
-const NoticesIdxApiHandler = require('./src/notices_idx');
+const NoticesApiHandler = require('./src/notices.js');
+const NoticesIdxApiHandler = require('./src/notices_idx.js');
 
 async function requestNoticesApi(request, env) {
   switch (request.method.toUpperCase()) {
