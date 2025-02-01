@@ -24,18 +24,18 @@ export async function updateNotice(idx, request, env) {
                  ${title ? "title = ?," : ""}
                  ${contents ? "contents = ?," : ""}
                  ${mustRead ? "mustRead = ?," : ""}
-                 updateDate = NOW()
+                 updateDate = CURRENT_TIMESTAMP
                  WHERE idx = ?`;
-
-    await env.DB.prepare(sql).bind(title, contents, mustRead, idx);
+    const statement = env.D1.prepare(sql).bind(title, contents, mustRead, idx);
+    await env.D1.batch([statement]);
 
     return new Response("Success");
 }
 
 export async function deleteNotice(idx, env) {
     const sql = `DELETE FROM Notices WHERE idx = ?`;
-
-    await env.DB.prepare(sql).bind(idx);
+    const statement = env.D1.prepare(sql).bind(idx);
+    await env.D1.batch([statement]);
 
     return new Response("Success");
 }

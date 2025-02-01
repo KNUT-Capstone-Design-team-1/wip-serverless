@@ -7,16 +7,16 @@
  *
  * Learn more at https://developers.cloudflare.com/workers/
  */
-import * as NoticesApiHandler from "./src/notices.js";
-import * as NoticesIdxApiHandler from "./src/notices_idx.js";
+import * as NoticesAPIHandler from "./src/notices.js";
+import * as NoticesIDXAPIHandler from "./src/notices_idx.js";
 
 async function requestNoticesApi(request, env) {
   switch (request.method.toUpperCase()) {
     case "POST":
-      return NoticesApiHandler.createNotice(request, env);
+      return NoticesAPIHandler.createNotice(request, env);
 
     case "GET":
-      return NoticesApiHandler.readNotices(request, env);
+      return NoticesAPIHandler.readNotices(request, env);
 
     default:
       return new Response("Bad Request", { status: 400 });
@@ -35,10 +35,10 @@ async function requestNoticesIdxApi(request, env) {
 
   switch (request.method.toUpperCase()) {
     case "PUT":
-      return NoticesIdxApiHandler.updateNotice(idx, request, env);
+      return NoticesIDXAPIHandler.updateNotice(idx, request, env);
 
     case "DELETE":
-      return NoticesIdxApiHandler.deleteNotice(idx, env);
+      return NoticesIDXAPIHandler.deleteNotice(idx, env);
 
     default:
       return new Response("Bad Request", { status: 400 });
