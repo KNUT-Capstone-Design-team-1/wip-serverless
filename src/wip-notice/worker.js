@@ -24,15 +24,24 @@ async function requestNoticesApi(request, env) {
 }
 
 async function requestNoticesIdxApi(request, env) {
+  const path = new URL(request.url).pathname;
+  const pathParts = path.split('/').filter(Boolean);
+  const idx = parseInt(pathParts[1], 10);
+
+  if (!idx) {
+    console.log(`[REQUEST-NOTICES-IDX-API] No idx`);
+    return new Response("Bad Request", { status: 400 });
+  }
+
   switch (request.method.toUpperCase()) {
     case "GET":
-      return NoticesIdxApiHandler.readNoticeDetail(request, env);
+      return NoticesIdxApiHandler.readNoticeDetail(idx, env);
 
     case "PUT":
-      return NoticesIdxApiHandler.updateNotice(request, env);
+      return NoticesIdxApiHandler.updateNotice(idx, request, env);
 
     case "DELETE":
-      return NoticesIdxApiHandler.deleteNotice(request, env);
+      return NoticesIdxApiHandler.deleteNotice(idx, env);
 
     default:
       return new Response("Bad Request", { status: 400 });
