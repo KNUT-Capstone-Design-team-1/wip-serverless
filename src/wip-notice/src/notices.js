@@ -13,16 +13,19 @@ async function createNotice(request, env) {
         return new Response("Bad Request", { status: 400 });
     }
 
-    const { title, contents, mustRead } = payload;
+    const { title, contents, mustRead = false } = payload;
 
     if (!title || !contents) {
         console.log(`[CREATE-NOTICE] Required value not exist. title: %s, contents: %s`, title, contents);
         return new Response("Bad Request", { status: 400 });
     }
 
-    const sql = "";
+    const sql = `INSERT INTO Notices (idx, title, contents, mustRead, createDate, updateDate)
+                 VALUES ((SELECT IFNULL(MAX(idx), 0) + 1 FROM Notices), ?, ?, ?, NOW(), NOW())`;
 
-    return new Response("preparing API");
+    await env.DB.prepare(sql).bind(title, contents, mustRead);
+
+    return new Response("Success");
 }
 
 async function readNotices(request, env) {
@@ -36,12 +39,11 @@ async function readNotices(request, env) {
         return new Response("Content Too Large", { status: 413 });
     }
 
-    const selectQuery = `SELECT idx, title, contents, mustRead, createDate, updateDate 
-                         FROM Notices
-                         ${mustRead ? "WHERE mustRead = 1" : ""}
-                         ORDER BY idx LIMIT ?,?`;
+    const sql = `SELECT idx, title, mustRead FROM Notices
+                 ${mustRead ? "WHERE mustRead = 1" : ""}
+                 ORDER BY idx LIMIT ?,?`;
 
-    const notices = env.DB.prepare(selectQuery).bind(skip, limit);
+    const notices = await env.DB.prepare(sql).bind(skip, limit);
 
     return Response.json(notices);
 }
