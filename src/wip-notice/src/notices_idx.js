@@ -37,5 +37,5 @@ export async function deleteNotice(idx, env) {
     const statement = env.D1.prepare(sql).bind(idx);
     await env.D1.batch([statement]);
 
-    return new Response("Success");
+    return new Response("Success", { status: 200 });
 }
