@@ -23,7 +23,7 @@ export async function createNotice(request, env) {
   const statement = env.D1.prepare(sql).bind(title, contents, mustRead);
   await env.D1.batch([statement]);
 
-  return new Response("Success");
+  return new Response("Created", { status: 201 });
 }
 
 export async function readNotices(request, env) {

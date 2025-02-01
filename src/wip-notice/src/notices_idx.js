@@ -29,7 +29,7 @@ export async function updateNotice(idx, request, env) {
     const statement = env.D1.prepare(sql).bind(title, contents, mustRead, idx);
     await env.D1.batch([statement]);
 
-    return new Response("Success");
+    return new Response("Success", { status: 200 });
 }
 
 export async function deleteNotice(idx, env) {
