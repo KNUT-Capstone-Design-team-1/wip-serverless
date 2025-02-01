@@ -7,8 +7,8 @@
  *
  * Learn more at https://developers.cloudflare.com/workers/
  */
-const NoticesApiHandler = require('./src/notices.js');
-const NoticesIdxApiHandler = require('./src/notices_idx.js');
+import * as NoticesApiHandler from "./src/notices.js";
+import * as NoticesIdxApiHandler from "./src/notices_idx.js";
 
 async function requestNoticesApi(request, env) {
   switch (request.method.toUpperCase()) {
@@ -25,7 +25,7 @@ async function requestNoticesApi(request, env) {
 
 async function requestNoticesIdxApi(request, env) {
   const path = new URL(request.url).pathname;
-  const pathParts = path.split('/').filter(Boolean);
+  const pathParts = path.split("/").filter(Boolean);
   const idx = parseInt(pathParts[1], 10);
 
   if (!idx) {

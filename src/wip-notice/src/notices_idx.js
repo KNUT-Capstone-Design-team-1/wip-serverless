@@ -1,4 +1,4 @@
-async function updateNotice(idx, request, env) {
+export async function updateNotice(idx, request, env) {
     const contentType = request.headers.get("Content-Type");
 
     if (contentType !== "application/json") {
@@ -32,12 +32,10 @@ async function updateNotice(idx, request, env) {
     return new Response("Success");
 }
 
-async function deleteNotice(idx, env) {
+export async function deleteNotice(idx, env) {
     const sql = `DELETE FROM Notices WHERE idx = ?`;
 
     await env.DB.prepare(sql).bind(idx);
 
     return new Response("Success");
 }
-
-module.exports = { updateNotice, deleteNotice };
