@@ -59,12 +59,7 @@ function authenticate(req) {
 
 async function requestToAPI(req) {
   try {
-    const { ITEM_SEQ } = req.query;
     const { API_URL, SAFE_MAP_SERVICE_KEY } = process.env;
-
-    if (!ITEM_SEQ) {
-      throw new Error(`Invalid query ${ITEM_SEQ}`);
-    }
 
     const result = await axios.get(
       `${API_URL}&serviceKey=${SAFE_MAP_SERVICE_KEY}`
