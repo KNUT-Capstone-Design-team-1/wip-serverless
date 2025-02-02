@@ -59,11 +59,20 @@ function authenticate(req) {
 
 async function requestToAPI(req) {
   try {
-    const { API_URL, SAFE_MAP_SERVICE_KEY } = process.env;
+    const { pageNo, numOfRows, Q0, Q1, QT, QN } = req.query;
+    const { API_URL, ENC_SERVICE_KEY } = process.env;
 
-    const result = await axios.get(
-      `${API_URL}&serviceKey=${SAFE_MAP_SERVICE_KEY}`
-    );
+    const result = await axios.get(`${API_URL}?serviceKey=${ENC_SERVICE_KEY}`, {
+      params: {
+        serviceKey: ENC_SERVICE_KEY,
+        pageNo,
+        numOfRows,
+        Q0,
+        Q1,
+        QT,
+        QN,
+      },
+    });
 
     const pharmacies = result?.data?.response?.body?.items;
 
