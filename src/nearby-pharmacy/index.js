@@ -74,14 +74,14 @@ async function requestToAPI(req) {
       },
     });
 
-    const pharmacies = result?.data?.response?.body?.items;
+    const response = result?.data?.response;
 
-    if (!pharmacies) {
-      console.log("Invalid response %s", result?.data?.response);
+    if (!response) {
+      console.log("Invalid response %s", result?.data);
       throw new Error(`Invalid response`);
     }
 
-    return pharmacies;
+    return response;
   } catch (e) {
     console.log("Standard API Error", e.stack || e);
     throw e;
