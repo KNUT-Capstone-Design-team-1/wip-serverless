@@ -72,9 +72,12 @@ async function getMarkImageData(req) {
     }
 
     const total = markImageData.length;
-    const totalPage = Math.ceil(total / limit);
-    const current = (page - 1) * limit;
-    const data = markImageData.slice(current, current + limit);
+    const totalPage = Math.ceil(Number(total) / Number(limit));
+    const current = (Number(page) - 1) * Number(limit);
+    const data = markImageData.slice(
+      Number(current),
+      Number(current) + Number(limit)
+    );
 
     return { total, totalPage, page, limit, data };
   } catch (e) {
