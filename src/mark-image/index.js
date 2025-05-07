@@ -61,8 +61,10 @@ async function getMarkImageData(req) {
   try {
     const { page, limit } = req.query;
 
-    if ((!page || !limit)) {
-      throw new Error(`Page and limit not received. page: ${page}, limit: ${limit}`);
+    if (!page || !limit) {
+      throw new Error(
+        `Page and limit not received. page: ${page}, limit: ${limit}`
+      );
     }
 
     if (limit > 50) {
@@ -70,10 +72,11 @@ async function getMarkImageData(req) {
     }
 
     const total = markImageData.length;
+    const totalPage = Math.ceil(total / limit);
     const current = (page - 1) * limit;
-    const data = markImageData.slice(current, current + limit + 1);
+    const data = markImageData.slice(current, current + limit);
 
-    return { total, totalPage: Math.ceil(total / limit), page, limit, data };
+    return { total, totalPage, page, limit, data };
   } catch (e) {
     console.log("Standard API Error", e.stack || e);
     throw e;
