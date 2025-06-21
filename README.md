@@ -10,6 +10,7 @@
 # image-search
 
 - 이미지 검색 API
+- 이미지 검색 API v2 (Gemini)
 
 # initial-info
 

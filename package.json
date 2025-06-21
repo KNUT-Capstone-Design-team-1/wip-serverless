@@ -1,6 +1,7 @@
 {
   "dependencies": {
     "@google-cloud/functions-framework": "^3.4.2",
+    "@google-cloud/vertexai": "^1.10.0",
     "axios": "^1.7.7",
     "dayjs": "^1.11.13",
     "dotenv": "^16.4.5",
