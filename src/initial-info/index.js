@@ -4,6 +4,7 @@ const utc = require("dayjs/plugin/utc");
 const fs = require("fs");
 const path = require("path");
 const NodeRSA = require("node-rsa");
+const config = require("./config.json");
 
 /**
  * auth header로 부터 토큰을 추출
@@ -52,10 +53,7 @@ function getInitInfo(req) {
     return null;
   }
 
-  return {
-    appVersion: "2.1.0",
-    resourceDate: "2025-07-05",
-  };
+  return config;
 }
 
 functions.http("initInfo", (req, res) => {
