@@ -54,7 +54,7 @@ function getInitInfo(req) {
 
   return {
     appVersion: "2.1.0",
-    resourceDate: "2025-07-08",
+    resourceDate: "2025-07-05",
   };
 }
 
