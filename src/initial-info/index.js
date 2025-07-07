@@ -53,8 +53,8 @@ function getInitInfo(req) {
   }
 
   return {
-    appVersion: "2.0.1",
-    resourceDate: "2024-08-17",
+    appVersion: "2.1.0",
+    resourceDate: "2025-07-08",
   };
 }
 
