@@ -57,6 +57,39 @@ function authenticate(req) {
   return true;
 }
 
+/**
+ * API 요청 실패 시 대체 행동
+ * @param {Request} req request 객체
+ * @returns
+ */
+async function executeFallbackAction(req) {
+  const { ITEM_SEQ } = req.query;
+  const baseUrl = `https://nedrug.mfds.go.kr/pbp/cmn/xml/drb/${ITEM_SEQ}`;
+  try {
+    // 대체 url 의약품안전나라
+    const EE = await axios.get(`${baseUrl}/EE`);
+    const UD = await axios.get(`${baseUrl}/UD`);
+    const NB = await axios.get(`${baseUrl}/NB`);
+
+    const nedrugData = {
+      EE_DOC_DATA: EE.data,
+      UD_DOC_DATA: UD.data,
+      NB_DOC_DATA: NB.data,
+    };
+
+    return { success: true, data: nedrugData };
+  } catch (e) {
+    console.log("Temp Url Error", e.stack || e);
+
+    return { success: false, data: {} };
+  }
+}
+
+/**
+ * API 요청
+ * @param {Request} req request 객체
+ * @returns
+ */
 async function requestToAPI(req) {
   try {
     const { ITEM_SEQ } = req.query;
@@ -81,28 +114,10 @@ async function requestToAPI(req) {
   } catch (e) {
     console.log("Standard API Error", e.stack || e);
 
+    const fallbackResult = await executeFallbackAction(req);
+
     // 임시처리
-    if (axios.isAxiosError(e)) {
-      // axios 에러가 자주 호출되는 문제 발생 해결 전까지 주석처리
-      //   const { ITEM_SEQ } = req.query;
-      //   const baseUrl = `https://nedrug.mfds.go.kr/pbp/cmn/xml/drb/${ITEM_SEQ}`;
-
-      //   try {
-      //     // 대체 url 의약품안전나라
-      //     const EE = await axios.get(`${baseUrl}/EE`);
-      //     const UD = await axios.get(`${baseUrl}/UD`);
-      //     const NB = await axios.get(`${baseUrl}/NB`);
-
-      //     const nedrugData = {
-      //         EE_DOC_DATA: EE.data,
-      //         UD_DOC_DATA: UD.data,
-      //         NB_DOC_DATA: NB.data,
-      //         };
-
-      //     return nedrugData;
-      //   } catch (e) {
-      //     console.log("Temp Url Error", e.stack || e);
-
+    if (!fallbackResult.success && axios.isAxiosError(e)) {
       // 국가정보자원관리원 화재로 인한 공공데이터 포털 장애로 상세 정보를 표시할 수 없습니다.
       return {
         EE_DOC_DATA:
@@ -112,8 +127,8 @@ async function requestToAPI(req) {
         NB_DOC_DATA:
           '<DOC title="">\r\n<SECTION title=" &#8251 국가정보자원관리원 화재로 인해 공공데이터 포털 장애가 발생하여 상세 정보를 표시할 수 없습니다.">\r\n<ARTICLE title="">\r\n</ARTICLE>\r\n</SECTION>\r\n</DOC>',
       };
-      //   }
     }
+
     throw e;
   }
 }
