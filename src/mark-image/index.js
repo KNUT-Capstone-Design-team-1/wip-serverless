@@ -110,11 +110,11 @@ functions.http("markImage", async (req, res) => {
   switch (req.method) {
     case "GET": {
       if (!authenticate(req)) {
-        res.status(401);
+        res.sendStatus(401);
         return;
       }
 
-      res.status(200).json(await getMarkImageData(req));
+      res.sendStatus(200).json(await getMarkImageData(req));
       break;
     }
   }

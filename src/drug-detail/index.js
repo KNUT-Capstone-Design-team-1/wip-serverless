@@ -88,13 +88,13 @@ functions.http("drugDetail", async (req, res) => {
   switch (req.method) {
     case "GET": {
       if (!authenticate(req)) {
-        res.status(401);
+        res.sendStatus(401);
         return;
       }
 
       const drugDetail = await requestToAPI(req);
 
-      res.status(200).json(drugDetail);
+      res.sendStatus(200).json(drugDetail);
       break;
     }
   }

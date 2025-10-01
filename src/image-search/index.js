@@ -133,7 +133,7 @@ functions.http("imageSearch", async (req, res) => {
   switch (req.method) {
     case "POST": {
       if (!authenticate(req)) {
-        res.status(401);
+        res.sendStatus(401);
         return;
       }
 
@@ -141,15 +141,15 @@ functions.http("imageSearch", async (req, res) => {
 
       if (apiVersion === 2) {
         const response = await requestGemini(req);
-        res.status(200).json(response);
+        res.sendStatus(200).json(response);
       } else {
         const searchResult = await requestDLServer(req);
-        res.status(searchResult.status).json(searchResult.data);
+        res.sendStatus(searchResult.status).json(searchResult.data);
       }
       break;
     }
 
     default:
-      res.status(405).send();
+      res.sendStatus(405).send();
   }
 });

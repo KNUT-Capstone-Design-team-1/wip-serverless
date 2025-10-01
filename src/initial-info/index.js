@@ -62,15 +62,15 @@ functions.http("initInfo", (req, res) => {
       const initialInfo = getInitInfo(req);
 
       if (!initialInfo) {
-        res.status(401);
+        res.sendStatus(401);
         return;
       }
 
-      res.status(200).json(initialInfo);
+      res.sendStatus(200).json(initialInfo);
       break;
     }
 
     default:
-      res.status(405).send();
+      res.sendStatus(405).send();
   }
 });
