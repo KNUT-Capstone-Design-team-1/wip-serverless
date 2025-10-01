@@ -114,7 +114,7 @@ functions.http("markImage", async (req, res) => {
         return;
       }
 
-      res.sendStatus(200).json(await getMarkImageData(req));
+      res.status(200).json(await getMarkImageData(req));
       break;
     }
   }

@@ -94,7 +94,7 @@ functions.http("drugDetail", async (req, res) => {
 
       const drugDetail = await requestToAPI(req);
 
-      res.sendStatus(200).json(drugDetail);
+      res.status(200).json(drugDetail);
       break;
     }
   }

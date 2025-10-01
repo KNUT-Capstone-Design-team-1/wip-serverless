@@ -66,11 +66,11 @@ functions.http("initInfo", (req, res) => {
         return;
       }
 
-      res.sendStatus(200).json(initialInfo);
+      res.status(200).json(initialInfo);
       break;
     }
 
     default:
-      res.sendStatus(405).send();
+      res.sendStatus(405);
   }
 });

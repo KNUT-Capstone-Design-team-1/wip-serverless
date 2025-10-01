@@ -141,15 +141,15 @@ functions.http("imageSearch", async (req, res) => {
 
       if (apiVersion === 2) {
         const response = await requestGemini(req);
-        res.sendStatus(200).json(response);
+        res.status(200).json(response);
       } else {
         const searchResult = await requestDLServer(req);
-        res.sendStatus(searchResult.status).json(searchResult.data);
+        res.status(searchResult.status).json(searchResult.data);
       }
       break;
     }
 
     default:
-      res.sendStatus(405).send();
+      res.sendStatus(405);
   }
 });
