@@ -62,28 +62,28 @@ function authenticate(req) {
  * @param {Request} req request 객체
  * @returns
  */
-async function executeFallbackAction(req) {
-  const { ITEM_SEQ } = req.query;
-  const baseUrl = `https://nedrug.mfds.go.kr/pbp/cmn/xml/drb/${ITEM_SEQ}`;
-  try {
-    // 대체 url 의약품안전나라
-    const EE = await axios.get(`${baseUrl}/EE`);
-    const UD = await axios.get(`${baseUrl}/UD`);
-    const NB = await axios.get(`${baseUrl}/NB`);
+// async function executeFallbackAction(req) {
+//   const { ITEM_SEQ } = req.query;
+//   const baseUrl = `https://nedrug.mfds.go.kr/pbp/cmn/xml/drb/${ITEM_SEQ}`;
+//   try {
+//     // 대체 url 의약품안전나라
+//     const EE = await axios.get(`${baseUrl}/EE`);
+//     const UD = await axios.get(`${baseUrl}/UD`);
+//     const NB = await axios.get(`${baseUrl}/NB`);
 
-    const nedrugData = {
-      EE_DOC_DATA: EE.data,
-      UD_DOC_DATA: UD.data,
-      NB_DOC_DATA: NB.data,
-    };
+//     const nedrugData = {
+//       EE_DOC_DATA: EE.data,
+//       UD_DOC_DATA: UD.data,
+//       NB_DOC_DATA: NB.data,
+//     };
 
-    return { success: true, data: nedrugData };
-  } catch (e) {
-    console.log("Temp Url Error", e.stack || e);
+//     return { success: true, data: nedrugData };
+//   } catch (e) {
+//     console.log("Temp Url Error", e.stack || e);
 
-    return { success: false, data: {} };
-  }
-}
+//     return { success: false, data: {} };
+//   }
+// }
 
 /**
  * API 요청
@@ -114,10 +114,10 @@ async function requestToAPI(req) {
   } catch (e) {
     console.log("Standard API Error", e.stack || e);
 
-    const fallbackResult = await executeFallbackAction(req);
+    // const fallbackResult = await executeFallbackAction(req);
 
     // 임시처리
-    if (!fallbackResult.success && axios.isAxiosError(e)) {
+    if (axios.isAxiosError(e)) {
       // 국가정보자원관리원 화재로 인한 공공데이터 포털 장애로 상세 정보를 표시할 수 없습니다.
       return {
         EE_DOC_DATA:
