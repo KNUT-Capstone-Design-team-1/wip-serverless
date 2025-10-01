@@ -137,7 +137,7 @@ functions.http("imageSearch", async (req, res) => {
         return;
       }
 
-      const apiVersion = parseInt(req.headers.apiVersion, 10);
+      const apiVersion = parseInt(req.headers.apiversion, 10);
 
       if (apiVersion === 2) {
         const response = await requestGemini(req);
