@@ -49,14 +49,14 @@ export default {
   async fetch(request, env, _ctx) {
     const { pathname } = new URL(request.url);
 
-    if (/^\/notices\??$/.test(pathname)) {
+    if (/^\/notices\/?$/.test(pathname)) {
       return requestNoticesApi(request, env);
     }
 
-    if (/^\/notices\/\d+$/) {
+    if (/^\/notices\/\d+$/.test(pathname)) {
       return requestNoticesIdxApi(request, env);
     }
 
     return new Response("Not Found", { status: 404 });
   },
-};
+}
