@@ -103,7 +103,10 @@ const vertexai = new VertexAI({
 });
 
 const geminiModel = vertexai.getGenerativeModel({
-  model: "gemini-2.5-flash",
+  model: process.env.MODEL,
+  thinkingConfig: {
+    thinkingLevel: "MEDIUM",
+  },
   systemInstruction: {
     parts: [systemPrompt],
   },

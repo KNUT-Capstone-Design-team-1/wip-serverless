@@ -4,3 +4,4 @@ rsa_prv_key
 google_service_key.json
 *.http
 tmp
+.DS_Store
