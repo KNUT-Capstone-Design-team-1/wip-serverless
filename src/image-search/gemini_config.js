@@ -1,7 +1,7 @@
-import {
+const {
   VertexAI,
   FunctionDeclarationSchemaType,
-} from "@google-cloud/vertexai";
+} = require("@google-cloud/vertexai");
 
 const responseSchema = {
   name: "Pill_Info_Extractor",
@@ -93,10 +93,6 @@ const systemPrompt = {
   - If no pill is found in the image, or if a specific attribute is not present (e.g., no print), you must provide an empty list \`[]\` for the corresponding field as required by the schema.`,
 };
 
-const textPart = {
-  text: "Analyze the features of the pill in this image (print, shape, and color) and respond in JSON format. If no pill is found or a feature cannot be identified, you must return an empty array `[]` for the corresponding field as required by the schema.",
-};
-
 const vertexai = new VertexAI({
   project: process.env.PROJECT,
   location: process.env.LOCATION,
@@ -112,4 +108,4 @@ const geminiModel = vertexai.getGenerativeModel({
   },
 });
 
-export { geminiModel, responseSchema, textPart };
+module.exports = { geminiModel, responseSchema };

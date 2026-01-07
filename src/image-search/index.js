@@ -1,7 +1,7 @@
 require("dotenv").config();
 const functions = require("@google-cloud/functions-framework");
 const { authenticate } = require("./authentication");
-const { geminiModel, responseSchema, textPart } = require("./gemini_config");
+const { geminiModel, responseSchema } = require("./gemini_config");
 
 /**
  * Gemini 모델 서버 요청
@@ -10,7 +10,11 @@ const { geminiModel, responseSchema, textPart } = require("./gemini_config");
  */
 async function requestGemini(req) {
   const { base64 } = req.body;
+
   const filePart = { inline_data: { data: base64, mimeType: "image/jpeg" } };
+  const textPart = {
+    text: "Analyze the features of the pill in this image (print, shape, and color) and respond in JSON format. If no pill is found or a feature cannot be identified, you must return an empty array `[]` for the corresponding field as required by the schema.",
+  };
 
   const request = {
     contents: [{ role: "user", parts: [textPart, filePart] }],
