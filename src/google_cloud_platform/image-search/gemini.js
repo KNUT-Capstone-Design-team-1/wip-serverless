@@ -103,10 +103,9 @@ const vertexai = new VertexAI({
 });
 
 const geminiModel = vertexai.getGenerativeModel({
-  /** gemini 3 부터 사용 가능 */
-  // model: process.env.MODEL,
+  model: process.env.MODEL,
   // thinkingConfig: {
-  //   thinkingLevel: "MEDIUM",
+  //   thinkingLevel: "MEDIUM", // gemini 3 부터 지원
   // },
   systemInstruction: {
     parts: [systemPrompt],
