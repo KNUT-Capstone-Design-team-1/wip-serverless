@@ -24,7 +24,13 @@ functions.http('database-version', (req, res) => {
         return;
       }
 
-      res.status(200).json(getDatabaseVersion(req));
+      const result = getDatabaseVersion(req);
+
+      if (!result.success) {
+        res.status(500).send(result.message);
+      }
+
+      res.status(200).json(result);
       break;
     }
   }
