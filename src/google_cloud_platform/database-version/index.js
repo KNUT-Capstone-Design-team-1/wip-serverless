@@ -28,6 +28,7 @@ functions.http('database-version', (req, res) => {
 
       if (!result.success) {
         res.status(500).send(result.message);
+        return;
       }
 
       res.status(200).json(result);
