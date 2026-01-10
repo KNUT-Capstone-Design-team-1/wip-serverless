@@ -1,6 +1,6 @@
 const functions = require("@google-cloud/functions-framework");
 const { authenticate } = require("./authentication");
-const resourceData = require("./resource.json");
+const pillData = require("./pill_data.json");
 
 const PAGE_LIMIT = 1000;
 
@@ -20,7 +20,7 @@ function getPillDataResource(req) {
   const totalPage = Math.ceil(Number(total) / Number(PAGE_LIMIT));
   const current = (Number(page) - 1) * Number(PAGE_LIMIT);
 
-  const { resources } = resourceData;
+  const { resources } = pillData;
 
   const resource = resources.slice(
     Number(current),
