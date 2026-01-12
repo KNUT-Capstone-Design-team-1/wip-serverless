@@ -2,7 +2,7 @@ const functions = require("@google-cloud/functions-framework");
 const { authenticate } = require("./authentication");
 const pillData = require("./pill_data.json");
 
-const PAGE_LIMIT = 1000;
+const PAGE_LIMIT = 5000;
 
 /**
  * pill_data 테이블 원천 데이터 반환
@@ -12,19 +12,19 @@ const PAGE_LIMIT = 1000;
 function getPillDataResource(req) {
   const { page } = req.query;
 
-  if (!resources) {
+  if (!pillData?.resources) {
     return { success: false, message: "Invalid Resource Data" };
   }
 
-  const total = resource.length;
+  const { resources } = pillData;
+  
+  const total = resources.length;
   const totalPage = Math.ceil(Number(total) / Number(PAGE_LIMIT));
   const current = (Number(page) - 1) * Number(PAGE_LIMIT);
 
-  const { resources } = pillData;
-
   const resource = resources.slice(
     Number(current),
-    Number(current) + Number(limit)
+    Number(current) + Number(PAGE_LIMIT)
   );
 
   return { success: true, data: { resource, total, totalPage, current } };
