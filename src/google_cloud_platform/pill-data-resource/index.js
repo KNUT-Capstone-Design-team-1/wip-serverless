@@ -27,7 +27,7 @@ function getPillDataResource(req) {
     Number(current) + Number(limit)
   );
 
-  return { success: true, resource, total, totalPage, current };
+  return { success: true, data: { resource, total, totalPage, current } };
 }
 
 functions.http("pill-data-resource", (req, res) => {
@@ -49,7 +49,7 @@ functions.http("pill-data-resource", (req, res) => {
         return;
       }
 
-      res.status(200).json(result);
+      res.status(200).json(result.data);
       break;
     }
   }

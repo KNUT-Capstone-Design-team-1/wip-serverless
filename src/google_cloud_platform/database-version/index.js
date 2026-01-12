@@ -13,7 +13,7 @@ function getDatabaseVersion() {
     return { success: false, message: 'Invalid Config File' };
   }
 
-  return { success: true, schemaVersion, dataVersion };
+  return { success: true, data: { schemaVersion, dataVersion } };
 }
 
 functions.http('database-version', (req, res) => {
@@ -31,7 +31,7 @@ functions.http('database-version', (req, res) => {
         return;
       }
 
-      res.status(200).json(result);
+      res.status(200).json(result.data);
       break;
     }
   }

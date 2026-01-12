@@ -31,7 +31,7 @@ functions.http('pill-data-table-schema', (req, res) => {
         return;
       }
 
-      res.status(200).json(result);
+      res.status(200).json(result.columns);
       break;
     }
   }
