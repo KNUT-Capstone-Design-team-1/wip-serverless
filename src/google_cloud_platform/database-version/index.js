@@ -7,13 +7,11 @@ const config = require("./config.json");
  * @returns 
  */
 function getDatabaseVersion() {
-  const { schemaVersion, dataVersion } = config;
-
-  if (typeof schemaVersion !== 'number' || typeof dataVersion !== 'number') {
+  if (!config?.pillData) {
     return { success: false, message: 'Invalid Config File' };
   }
 
-  return { success: true, data: { schemaVersion, dataVersion } };
+  return { success: true, data: config };
 }
 
 functions.http('database-version', (req, res) => {
