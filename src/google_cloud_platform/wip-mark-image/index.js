@@ -64,7 +64,7 @@ async function getMarkImageData(req) {
   }
 }
 
-functions.http("markImage", async (req, res) => {
+functions.http("wip-mark-image", async (req, res) => {
   switch (req.method) {
     case "GET": {
       if (!authenticate(req)) {

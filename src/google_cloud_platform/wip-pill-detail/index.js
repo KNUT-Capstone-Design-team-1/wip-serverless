@@ -89,7 +89,7 @@ async function requestToAPI(req) {
   }
 }
 
-functions.http("drugDetail", async (req, res) => {
+functions.http("wip-pill-detail", async (req, res) => {
   switch (req.method) {
     case "GET": {
       if (!authenticate(req)) {

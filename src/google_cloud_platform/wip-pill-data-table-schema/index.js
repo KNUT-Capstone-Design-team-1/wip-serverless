@@ -16,7 +16,7 @@ function getPillDataTableSchema() {
   return { success: true, columns };
 }
 
-functions.http('pill-data-table-schema', (req, res) => {
+functions.http('wip-pill-data-table-schema', (req, res) => {
   switch (req.method) {
     case "GET": {
       if (!authenticate(req)) {

@@ -22,7 +22,7 @@ async function requestDetectImage(req) {
   return response;
 }
 
-functions.http("imageSearch", async (req, res) => {
+functions.http("wip-pill-image-feature-extraction", async (req, res) => {
   switch (req.method) {
     case "POST": {
       if (!authenticate(req)) {

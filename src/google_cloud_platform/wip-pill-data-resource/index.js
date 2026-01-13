@@ -30,7 +30,7 @@ function getPillDataResource(req) {
   return { success: true, data: { resource, total, totalPage, current } };
 }
 
-functions.http("pill-data-resource", (req, res) => {
+functions.http("wip-pill-data-resource", (req, res) => {
   switch (req.method) {
     case "GET": {
       if (!authenticate(req)) {

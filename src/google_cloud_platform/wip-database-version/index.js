@@ -14,7 +14,7 @@ function getDatabaseVersion() {
   return { success: true, data: config };
 }
 
-functions.http('database-version', (req, res) => {
+functions.http('wip-database-version', (req, res) => {
   switch (req.method) {
     case "GET": {
       if (!authenticate(req)) {
