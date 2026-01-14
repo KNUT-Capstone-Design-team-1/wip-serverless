@@ -6,9 +6,9 @@ const { authenticate } = require("./authentication");
  * @param {Request} req
  */
 function writeLog(req) {
-  const { logLevel, logData } = req.body;
+  const { logLevel, logContents } = req.body;
 
-  console.log(`==========Log Level: ${logLevel} : ${logData}==========`);
+  console.log(`==========Log Level: ${logLevel} : ${logContents}==========`);
 }
 
 functions.http("wip-log", (req, res) => {
