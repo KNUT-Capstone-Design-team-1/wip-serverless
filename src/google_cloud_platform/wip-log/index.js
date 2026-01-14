@@ -5,7 +5,7 @@ const { authenticate } = require("./authentication");
  * 로그를 증적
  * @param {Request} req
  */
-function writeLog(req) {
+async function writeLog(req) {
   const { logLevel, logContents } = req.body;
 
   console.log(`==========Log Level: ${logLevel} : ${logContents}==========`);
