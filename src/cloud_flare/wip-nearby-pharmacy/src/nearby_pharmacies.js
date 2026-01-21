@@ -1,3 +1,9 @@
+/**
+ * 주변 약국 조회
+ * @param {Request} request 요청 객체
+ * @param {Env} env workers 환경 객체
+ * @returns 
+ */
 export async function readPharmacies(request, env) {
   const queryParams = new URL(request.url).searchParams;
 

@@ -8,7 +8,14 @@
  * Learn more at https://developers.cloudflare.com/workers/
  */
 import * as NearbyPharmaciesAPIHandler from "./src/nearby_pharmacies.js";
+import { verifyToken } from "./src/authentication.js";
 
+/**
+ * 주변 약국 API 요청
+ * @param {Request} request 요청 객체
+ * @param {*} env workers 환경 객체
+ * @returns 
+ */
 async function requestNearbyPharmaciesApi(request, env) {
   switch (request.method.toUpperCase()) {
     case "GET":
@@ -21,6 +28,18 @@ async function requestNearbyPharmaciesApi(request, env) {
 
 export default {
   async fetch(request, env, _ctx) {
+    const token = request.headers.get("x-auth-token");
+
+    if (!token) {
+      return new Response("Unauthorized", { status: 401 });
+    }
+
+    const ok = await verifyToken(token, env.SECRET_KEY);
+
+    if (!ok) {
+      return new Response("Unauthorized", { status: 401 });
+    }
+
     const { pathname } = new URL(request.url);
 
     if (/^\/nearby-pharmacies\??$/.test(pathname)) {

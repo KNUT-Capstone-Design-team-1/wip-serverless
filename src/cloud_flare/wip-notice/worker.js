@@ -9,7 +9,14 @@
  */
 import * as NoticesAPIHandler from "./src/notices.js";
 import * as NoticesIDXAPIHandler from "./src/notices_idx.js";
+import { verifyToken } from "./src/authentication.js";
 
+/**
+ * 공지사항 API 요청
+ * @param {Request} request 요청 객체
+ * @param {*} env workers 환경 객체
+ * @returns
+ */
 async function requestNoticesApi(request, env) {
   switch (request.method.toUpperCase()) {
     case "POST":
@@ -23,6 +30,12 @@ async function requestNoticesApi(request, env) {
   }
 }
 
+/**
+ * 공지사항 1개에 대한 API 요청
+ * @param {Request} request 요청 객체
+ * @param {*} env workers 환경 객체
+ * @returns
+ */
 async function requestNoticesIdxApi(request, env) {
   const path = new URL(request.url).pathname;
   const pathParts = path.split("/").filter(Boolean);
@@ -47,6 +60,18 @@ async function requestNoticesIdxApi(request, env) {
 
 export default {
   async fetch(request, env, _ctx) {
+    const token = request.headers.get("x-auth-token");
+
+    if (!token) {
+      return new Response("Unauthorized", { status: 401 });
+    }
+
+    const ok = await verifyToken(token, env.SECRET_KEY);
+
+    if (!ok) {
+      return new Response("Unauthorized", { status: 401 });
+    }
+
     const { pathname } = new URL(request.url);
 
     if (/^\/notices\/?$/.test(pathname)) {
@@ -59,4 +84,4 @@ export default {
 
     return new Response("Not Found", { status: 404 });
   },
-}
+};

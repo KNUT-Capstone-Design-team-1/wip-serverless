@@ -1,3 +1,9 @@
+/**
+ * 공지사항 생성 
+ * @param {Request} request 요청 객체
+ * @param {*} env workers 환경
+ * @returns 
+ */
 export async function createNotice(request, env) {
     const contentType = request.headers.get("Content-Type");
 
@@ -26,6 +32,12 @@ export async function createNotice(request, env) {
     return new Response("Created", { status: 201 });
 }
 
+/**
+ * 공지사항 목록 조회
+ * @param {Request} request 요청 객체
+ * @param {*} env workers 환경
+ * @returns 
+ */
 export async function readNotices(request, env) {
     const queryParams = new URL(request.url).searchParams;
 
