@@ -100,7 +100,7 @@ function generateWhere(searchParams, ftsTokens) {
   }
 
   if (ftsTokens) {
-    whereClauses.push(`f MATCH ?`);
+    whereClauses.push(`nearby_pharmacies_fts MATCH ?`);
     whereValues.push(ftsTokens);
   }
 
@@ -172,8 +172,8 @@ export async function readPharmacies(request, env) {
       p.y
       ${hasCoordinate ? coordinateQuery : ``}
     FROM NearbyPharmacies p
+    ${ftsTokens ? ftsJoinQuery : ``}
     ${whereQuery}
-    ${ftsTokens ? `AND f MATCH ?` : ``}
     ${hasCoordinate ? `ORDER BY distance` : ``}
     LIMIT ?`;
 
@@ -184,10 +184,6 @@ export async function readPharmacies(request, env) {
   }
 
   values.push(...whereValues);
-
-  if (ftsTokens) {
-    values.push(ftsTokens);
-  }
 
   const statement = env.D1.prepare(sql).bind(...values, 30);
   const pharmacies = await statement.all();
