@@ -3,53 +3,63 @@ const encoder = new TextEncoder();
 /**
  * 시크릿 키 import
  * @param {String} secret 시크릿 키
- * @returns 
+ * @returns
  */
 async function importKey(secret) {
+  const format = "raw";
+  const encodedSecret = encoder.encode(secret);
+  const algorithm = { name: "HMAC", hash: "SHA-256" };
+  const extractable = false;
+  const keyUsages = ["sign", "verify"];
+
   return crypto.subtle.importKey(
-    "raw",
-    encoder.encode(secret),
-    { name: "HMAC", hash: "SHA-256" },
-    false,
-    ["sign", "verify"],
+    format,
+    encodedSecret,
+    algorithm,
+    extractable,
+    keyUsages,
   );
 }
 
 /**
  * base64 URL을 디코딩
  * @param {String} str base64 URL
- * @returns 
+ * @returns
  */
 function decodeBase64URL(str) {
-  str = str.replace(/-/g, "+").replace(/_/g, "/");
-  return Uint8Array.from(atob(str), (c) => c.charCodeAt(0));
+  const replacedStr = str.replace(/-/g, "+").replace(/_/g, "/");
+
+  return Uint8Array.from(atob(replacedStr), (c) => c.charCodeAt(0));
 }
 
 /**
  * 토큰 검증
  * @param {String} token 토큰
  * @param {String} secret 시크릿 키
- * @returns 
+ * @returns
  */
 export async function verifyToken(token, secret) {
   const [tsB64, sigB64] = token.split(".");
-  if (!tsB64 || !sigB64) return false;
-
-  const timestamp = atob(tsB64);
-  const tokenTime = Number(timestamp);
-  if (Number.isNaN(tokenTime)) return false;
-
-  // ⏱ 10분 검증
-  if (Date.now() - tokenTime > 10 * 60 * 1000) {
+  const isValidFormatToken = tsB64 && sigB64;
+  if (!isValidFormatToken) {
     return false;
   }
 
-  const key = await importKey(secret);
+  const timestamp = atob(tsB64);
+  const tokenTime = Number(timestamp);
+  if (Number.isNaN(tokenTime)) {
+    return false;
+  }
 
-  return crypto.subtle.verify(
-    "HMAC",
-    key,
-    decodeBase64URL(sigB64),
-    encoder.encode(timestamp),
-  );
+  const isExpiredToken = Date.now() - tokenTime > 10 * 60 * 1000;
+  if (isExpiredToken) {
+    return false;
+  }
+
+  const algorithm = "HMAC";
+  const key = await importKey(secret);
+  const signature = decodeBase64URL(sigB64);
+  const data = encoder.encode(timestamp);
+
+  return crypto.subtle.verify(algorithm, key, signature, data);
 }
