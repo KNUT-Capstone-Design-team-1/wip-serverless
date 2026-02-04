@@ -42,47 +42,81 @@ function validateSearchParams(searchParams) {
 }
 
 /**
+ * FTS 쿼리 반환
+ * @param {Object} regionInfo 지역 정보
+ * @returns
+ */
+function buildFtsQuery(regionInfo) {
+  const { address, region, district } = regionInfo;
+
+  const tokens = [];
+
+  if (address) {
+    tokens.push(address);
+  }
+
+  if (region) {
+    tokens.push(region);
+  }
+
+  if (district) {
+    tokens.push(district);
+  }
+
+  if (!tokens.length) {
+    return null;
+  }
+
+  return tokens
+    .map((t) => t.trim())
+    .filter(Boolean)
+    .join(" AND ");
+}
+
+/**
  * WHERE 쿼리와 파라미터를 생성
  * @param {Object} searchParams 검색 파라미터
  * @returns
  */
 function generateWhere(searchParams) {
-  const { x, y, states, region, district, address } = searchParams;
-
-  const filterMapper = {
-    states: [`states = ?`, [states]],
-    region: [`region LIKE ?`, [`%${region}%`]],
-    district: [`district LIKE ?`, [`%${district}%`]],
-    address: [`address LIKE ?`, [`%${address}%`]],
-  };
+  const { x, y, states, region, district } = searchParams;
 
   const whereClauses = [];
   const whereValues = [];
 
-  const attributeFilters = Object.entries(searchParams).filter(
-    ([k, v]) => v && !["x", "y"].includes(k),
-  );
+  if (states) {
+    whereClauses.push(`p.states = ?`);
+    whereValues.push(states);
+  }
 
-  if (attributeFilters.length) {
-    whereClauses.push(
-      attributeFilters.map(([k]) => filterMapper[k][0]).join(" AND "),
-    );
+  if (region) {
+    whereClauses.push(`p.region = ?`);
+    whereValues.push(region);
+  }
 
-    whereValues.push(...attributeFilters.flatMap(([k]) => filterMapper[k][1]));
+  if (district) {
+    whereClauses.push(`p.district = ?`);
+    whereValues.push(district);
   }
 
   const hasCoordinate = x && y;
   if (hasCoordinate) {
-    const earthRadius = 6371; // km
-    const distanceLimit = 3; // km
+    const distanceKm = 3;
+    const lat = Number(y);
+    const lng = Number(x);
 
-    whereClauses.push(`? * acos(
-      cos(radians(?)) * cos(radians(y)) *
-      cos(radians(x) - radians(?)) +
-      sin(radians(?)) * sin(radians(y))
-    ) < ?`);
+    const latDelta = distanceKm / 111;
+    const lngDelta = distanceKm / (111 * Math.cos((lat * Math.PI) / 180));
 
-    whereValues.push(earthRadius, y, x, y, distanceLimit);
+    whereClauses.push(`p.y BETWEEN ? AND ?`);
+    whereClauses.push(`p.x BETWEEN ? AND ?`);
+
+    whereValues.push(
+      lat - latDelta,
+      lat + latDelta,
+      lng - lngDelta,
+      lng + lngDelta,
+    );
   }
 
   const whereQuery = whereClauses.length
@@ -106,13 +140,52 @@ export async function readPharmacies(request, env) {
     return new Response(validate.message, { status: 400 });
   }
 
+  const ftsTokens = buildFtsQuery(searchParams);
   const { whereQuery, whereValues } = generateWhere(searchParams);
 
-  const sql = `SELECT id, name, states, region, district, postalCode, address, telephone, openData, x, y
-               FROM NearbyPharmacies
-               ${whereQuery || ''}`;
+  const hasCoordinate = searchParams.x && searchParams.y;
+  const coordinateQuery = `, acos(
+    cos(radians(?)) * cos(radians(p.y)) *
+    cos(radians(p.x) - radians(?)) +
+    sin(radians(?)) * sin(radians(p.y))
+  ) * 6371 AS distance`;
 
-  const statement = env.D1.prepare(sql).bind(...whereValues);
+  const ftsJoinQuery = `JOIN nearby_pharmacies_fts f ON f.rowid = p.rowid`;
+
+  const sql = `
+    SELECT
+      p.id,
+      p.name,
+      p.states,
+      p.region,
+      p.district,
+      p.postalCode,
+      p.address,
+      p.telephone,
+      p.openData,
+      p.x,
+      p.y
+      ${hasCoordinate ? coordinateQuery : ``}
+    FROM NearbyPharmacies p
+    ${ftsTokens ? ftsJoinQuery : ``}
+    ${whereQuery}
+    ${ftsTokens ? `AND f MATCH ?` : ``}
+    ${hasCoordinate ? `ORDER BY distance` : ``}
+    LIMIT ?`;
+
+  const values = [];
+
+  if (hasCoordinate) {
+    values.push(searchParams.y, searchParams.x, searchParams.y);
+  }
+
+  values.push(...whereValues);
+
+  if (ftsTokens) {
+    values.push(ftsTokens);
+  }
+
+  const statement = env.D1.prepare(sql).bind(...values, 30);
   const pharmacies = await statement.all();
 
   return Response.json(pharmacies);
