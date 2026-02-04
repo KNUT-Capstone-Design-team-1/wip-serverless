@@ -78,7 +78,7 @@ function buildFtsQuery(regionInfo) {
  * @param {Object} searchParams 검색 파라미터
  * @returns
  */
-function generateWhere(searchParams) {
+function generateWhere(searchParams, ftsTokens) {
   const { x, y, states, region, district } = searchParams;
 
   const whereClauses = [];
@@ -97,6 +97,11 @@ function generateWhere(searchParams) {
   if (district) {
     whereClauses.push(`p.district = ?`);
     whereValues.push(district);
+  }
+
+  if (ftsTokens) {
+    whereClauses.push(`f MATCH ?`);
+    whereValues.push(ftsTokens);
   }
 
   const hasCoordinate = x && y;
@@ -141,7 +146,7 @@ export async function readPharmacies(request, env) {
   }
 
   const ftsTokens = buildFtsQuery(searchParams);
-  const { whereQuery, whereValues } = generateWhere(searchParams);
+  const { whereQuery, whereValues } = generateWhere(searchParams, ftsTokens);
 
   const hasCoordinate = searchParams.x && searchParams.y;
   const coordinateQuery = `, acos(
@@ -150,7 +155,7 @@ export async function readPharmacies(request, env) {
     sin(radians(?)) * sin(radians(p.y))
   ) * 6371 AS distance`;
 
-  const ftsJoinQuery = `JOIN nearby_pharmacies_fts f ON f.rowid = p.rowid`;
+  const ftsJoinQuery = `JOIN nearby_pharmacies_fts AS f ON f.rowid = p.rowid`;
 
   const sql = `
     SELECT
@@ -167,7 +172,6 @@ export async function readPharmacies(request, env) {
       p.y
       ${hasCoordinate ? coordinateQuery : ``}
     FROM NearbyPharmacies p
-    ${ftsTokens ? ftsJoinQuery : ``}
     ${whereQuery}
     ${ftsTokens ? `AND f MATCH ?` : ``}
     ${hasCoordinate ? `ORDER BY distance` : ``}
