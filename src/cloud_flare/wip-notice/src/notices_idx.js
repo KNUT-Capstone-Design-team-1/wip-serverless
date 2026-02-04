@@ -2,7 +2,7 @@
  * 공지사항 업데이트
  * @param {number} idx 공지사항 ID
  * @param {Request} request 요청 객체
- * @param {*} env workers 환경
+ * @param {Object} env workers 환경
  * @returns
  */
 export async function updateNotice(idx, request, env) {
@@ -46,7 +46,7 @@ export async function updateNotice(idx, request, env) {
 /**
  * 공지사항 삭제
  * @param {number} idx 공지사항 ID
- * @param {*} env workers 환경
+ * @param {Object} env workers 환경
  * @returns
  */
 export async function deleteNotice(idx, env) {
