@@ -1,9 +1,10 @@
 const functions = require("@google-cloud/functions-framework");
 const compression = require("compression");
 const express = require("express");
-
 const { authenticate } = require("./authentication");
-const pillData = require("./pill_data.json");
+const pillData = require("./resources/pill_data.json");
+const markImages = require("./resources/mark_images.json");
+const nearbyPharmacies = require("./resources/nearby_pharmacies.json");
 
 const PAGE_LIMIT = 5000;
 
@@ -16,16 +17,39 @@ app.use(
 );
 
 /**
- * pill_data 테이블 원천 데이터 반환
+ * 테이블 별 원천 데이터 반환
+ * @param {String} table 
+ * @returns 
  */
-function getPillDataResource(req) {
-  const { page } = req.query;
+function getResourcesByTable(table) {
+  switch (table) {
+    case "pill_data":
+      return { success: true, resources: pillData };
 
-  if (!pillData?.resources) {
-    return { success: false, message: "Invalid Resource Data" };
+    case "mark_images":
+      return { success: true, resources: markImages };
+
+    case "nearby_pharmacies":
+      return { success: true, resources: nearbyPharmacies };
+
+    default:
+      return { success: false, message: "Invalid Table Name" };
+  }
+}
+
+/**
+ * 원천 데이터를 페이징하여 반환
+ * @param {String} 테이블 이름
+ * @returns {Number} 페이지
+ */
+function getResources(table, page) {
+  const tableResourceGetResult = getResourcesByTable(table);
+
+  if (!tableResourceGetResult.success) {
+    return tableResourceGetResult;
   }
 
-  const { resources } = pillData;
+  const { resources } = tableResourceGetResult;
 
   const total = resources.length;
   const totalPage = Math.ceil(total / PAGE_LIMIT);
@@ -47,7 +71,9 @@ app.get("/", (req, res) => {
     return;
   }
 
-  const result = getPillDataResource(req);
+  const { table, page } = req.query;
+
+  const result = getResources(table, page);
 
   if (!result.success) {
     res.status(500).send(result.message);
@@ -57,4 +83,4 @@ app.get("/", (req, res) => {
   res.status(200).json(result.data);
 });
 
-functions.http("wip-pill-data-resource", app);
+functions.http("wip-resource-data", app);
