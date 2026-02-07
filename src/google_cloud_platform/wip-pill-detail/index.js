@@ -1,7 +1,17 @@
 require("dotenv").config();
 const functions = require("@google-cloud/functions-framework");
+const compression = require("compression");
+const express = require("express");
 const axios = require("axios");
 const { authenticate } = require("./authentication");
+
+const app = express();
+
+app.use(
+  compression({
+    threshold: 1024, // 1KB 이상만 압축
+  }),
+);
 
 /**
  * API 요청 실패 시 대체 행동
@@ -33,17 +43,17 @@ async function executeFallbackAction(req) {
 
 /**
  * 서비스 사용 불가 시 대체 XML 반환
- * @returns 
+ * @returns
  */
 function getServiceDisableXML() {
   return {
     EE_DOC_DATA:
-    '<DOC title="">\r\n<SECTION title=" &#8251 공공데이터 포털 장애로 인해 상세 정보를 표시할 수 없습니다.">\r\n<ARTICLE title="">\r\n</ARTICLE>\r\n</SECTION>\r\n</DOC>',
+      '<DOC title="">\r\n<SECTION title=" &#8251 공공데이터 포털 장애로 인해 상세 정보를 표시할 수 없습니다.">\r\n<ARTICLE title="">\r\n</ARTICLE>\r\n</SECTION>\r\n</DOC>',
     UD_DOC_DATA:
-    '<DOC title="">\r\n<SECTION title=" &#8251 공공데이터 포털 장애로 인해 상세 정보를 표시할 수 없습니다.">\r\n<ARTICLE title="">\r\n</ARTICLE>\r\n</SECTION>\r\n</DOC>',
+      '<DOC title="">\r\n<SECTION title=" &#8251 공공데이터 포털 장애로 인해 상세 정보를 표시할 수 없습니다.">\r\n<ARTICLE title="">\r\n</ARTICLE>\r\n</SECTION>\r\n</DOC>',
     NB_DOC_DATA:
-    '<DOC title="">\r\n<SECTION title=" &#8251 공공데이터 포털 장애로 인해 상세 정보를 표시할 수 없습니다.">\r\n<ARTICLE title="">\r\n</ARTICLE>\r\n</SECTION>\r\n</DOC>',
-    };
+      '<DOC title="">\r\n<SECTION title=" &#8251 공공데이터 포털 장애로 인해 상세 정보를 표시할 수 없습니다.">\r\n<ARTICLE title="">\r\n</ARTICLE>\r\n</SECTION>\r\n</DOC>',
+  };
 }
 
 /**
@@ -61,7 +71,7 @@ async function requestToAPI(req) {
     }
 
     const result = await axios.get(
-      `${API_URL}&serviceKey=${ENC_SERVICE_KEY}&item_seq=${ITEM_SEQ}`
+      `${API_URL}&serviceKey=${ENC_SERVICE_KEY}&item_seq=${ITEM_SEQ}`,
     );
 
     const drugDetail = result?.data?.body?.items?.[0];
@@ -77,10 +87,10 @@ async function requestToAPI(req) {
 
     const fallbackResult = await executeFallbackAction(req);
 
-    if (fallbackResult.success){
+    if (fallbackResult.success) {
       return fallbackResult.data;
     }
-    
+
     if (axios.isAxiosError(e)) {
       return getServiceDisableXML();
     }
@@ -89,18 +99,15 @@ async function requestToAPI(req) {
   }
 }
 
-functions.http("wip-pill-detail", async (req, res) => {
-  switch (req.method) {
-    case "GET": {
-      if (!authenticate(req)) {
-        res.sendStatus(401);
-        return;
-      }
-
-      const drugDetail = await requestToAPI(req);
-
-      res.status(200).json(drugDetail);
-      break;
-    }
+app.get("/", async (req, res) => {
+  if (!authenticate(req)) {
+    res.sendStatus(401);
+    return;
   }
+
+  const drugDetail = await requestToAPI(req);
+
+  res.status(200).json(drugDetail);
 });
+
+functions.http("wip-pill-detail", app);

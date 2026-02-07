@@ -2,9 +2,11 @@
   "dependencies": {
     "@google-cloud/functions-framework": "^3.4.2",
     "@google-cloud/vertexai": "^1.10.0",
-    "axios": "^1.7.7",
     "dayjs": "^1.11.13",
-    "dotenv": "^16.4.5",
-    "node-rsa": "^1.1.1"
+    "node-rsa": "^1.1.1",
+    "compression": "^1.7.4",
+    "express": "^4.19.2",
+    "axios": "^1.7.7",
+    "dotenv": "^16.4.5"
   }
 }

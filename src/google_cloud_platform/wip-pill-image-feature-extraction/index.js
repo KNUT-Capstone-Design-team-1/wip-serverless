@@ -1,7 +1,17 @@
 require("dotenv").config();
 const functions = require("@google-cloud/functions-framework");
+const compression = require("compression");
+const express = require("express");
 const { authenticate } = require("./authentication");
 const { requestDetectImageGemini } = require("./gemini");
+
+const app = express();
+
+app.use(
+  compression({
+    threshold: 1024, // 1KB 이상만 압축
+  }),
+);
 
 /**
  * 이미지 특징 추출 요청
@@ -13,7 +23,7 @@ async function requestDetectImage(req) {
 
   console.log(
     "gemini result",
-    JSON.stringify(result.response.candidates[0], null, 2)
+    JSON.stringify(result.response.candidates[0], null, 2),
   );
 
   const response =
@@ -22,26 +32,20 @@ async function requestDetectImage(req) {
   return response;
 }
 
-functions.http("wip-pill-image-feature-extraction", async (req, res) => {
-  switch (req.method) {
-    case "POST": {
-      if (!authenticate(req)) {
-        res.sendStatus(401);
-        return;
-      }
+app.post("/", async (req, res) => {
+  if (!authenticate(req)) {
+    res.sendStatus(401);
+    return;
+  }
 
-      const apiVersion = parseInt(req.headers.apiversion, 10);
+  const apiVersion = parseInt(req.headers.apiversion, 10);
 
-      if (apiVersion === 2) {
-        const response = await requestDetectImage(req);
-        res.status(200).json(response);
-      } else {
-        res.status(403).send("Invalid API version");
-      }
-      break;
-    }
-
-    default:
-      res.sendStatus(405);
+  if (apiVersion === 2) {
+    const response = await requestDetectImage(req);
+    res.status(200).json(response);
+  } else {
+    res.status(403).send("Invalid API version");
   }
 });
+
+functions.http("wip-pill-image-feature-extraction", app);
