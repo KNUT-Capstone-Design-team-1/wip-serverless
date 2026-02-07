@@ -1,0 +1,28 @@
+{
+  "columns": [
+    {
+      "name": "code",
+      "type": "TEXT",
+      "size": null,
+      "nullable": false,
+      "defaultValue": "",
+      "isPK": true
+    },
+    {
+      "name": "title",
+      "type": "TEXT",
+      "size": null,
+      "nullable": false,
+      "defaultValue": "",
+      "isPK": false
+    },
+    {
+      "name": "base64",
+      "type": "TEXT",
+      "size": null,
+      "nullable": false,
+      "defaultValue": "",
+      "isPK": false
+    }
+  ]
+}

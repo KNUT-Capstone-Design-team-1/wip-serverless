@@ -2,32 +2,32 @@
   "columns": [
     {
       "name": "ITEM_SEQ",
-      "type": "VARCHAR",
-      "size": 255,
+      "type": "TEXT",
+      "size": null,
       "nullable": false,
       "defaultValue": "",
       "isPK": true
     },
     {
       "name": "ITEM_NAME",
-      "type": "VARCHAR",
-      "size": 255,
+      "type": "TEXT",
+      "size": null,
       "nullable": false,
       "defaultValue": "",
       "isPK": false
     },
     {
       "name": "ENTP_SEQ",
-      "type": "VARCHAR",
-      "size": 255,
+      "type": "TEXT",
+      "size": null,
       "nullable": false,
       "defaultValue": "",
       "isPK": false
     },
     {
       "name": "ENTP_NAME",
-      "type": "VARCHAR",
-      "size": 255,
+      "type": "TEXT",
+      "size": null,
       "nullable": false,
       "defaultValue": "",
       "isPK": false
@@ -42,128 +42,128 @@
     },
     {
       "name": "PRINT_FRONT",
-      "type": "VARCHAR",
-      "size": 255,
+      "type": "TEXT",
+      "size": null,
       "nullable": true,
       "defaultValue": "",
       "isPK": false
     },
     {
       "name": "PRINT_BACK",
-      "type": "VARCHAR",
-      "size": 255,
+      "type": "TEXT",
+      "size": null,
       "nullable": true,
       "defaultValue": "",
       "isPK": false
     },
     {
       "name": "DRUG_SHAPE",
-      "type": "VARCHAR",
-      "size": 255,
+      "type": "TEXT",
+      "size": null,
       "nullable": true,
       "defaultValue": "",
       "isPK": false
     },
     {
       "name": "COLOR_CLASS1",
-      "type": "VARCHAR",
-      "size": 255,
+      "type": "TEXT",
+      "size": null,
       "nullable": true,
       "defaultValue": "",
       "isPK": false
     },
     {
       "name": "COLOR_CLASS2",
-      "type": "VARCHAR",
-      "size": 255,
+      "type": "TEXT",
+      "size": null,
       "nullable": true,
       "defaultValue": "",
       "isPK": false
     },
     {
       "name": "LINE_FRONT",
-      "type": "VARCHAR",
-      "size": 255,
+      "type": "TEXT",
+      "size": null,
       "nullable": true,
       "defaultValue": "",
       "isPK": false
     },
     {
       "name": "LINE_BACK",
-      "type": "VARCHAR",
-      "size": 255,
+      "type": "TEXT",
+      "size": null,
       "nullable": true,
       "defaultValue": "",
       "isPK": false
     },
     {
       "name": "IMG_REGIST_TS",
-      "type": "VARCHAR",
-      "size": 255,
+      "type": "TEXT",
+      "size": null,
       "nullable": true,
       "defaultValue": "",
       "isPK": false
     },
     {
       "name": "CLASS_NAME",
-      "type": "VARCHAR",
-      "size": 255,
+      "type": "TEXT",
+      "size": null,
       "nullable": true,
       "defaultValue": "",
       "isPK": false
     },
     {
       "name": "ETC_OTC_CODE",
-      "type": "VARCHAR",
-      "size": 255,
+      "type": "TEXT",
+      "size": null,
       "nullable": true,
       "defaultValue": "",
       "isPK": false
     },
     {
       "name": "ITEM_PERMIT_DATE",
-      "type": "VARCHAR",
-      "size": 255,
+      "type": "TEXT",
+      "size": null,
       "nullable": true,
       "defaultValue": "",
       "isPK": false
     },
     {
       "name": "MARK_CODE_FRONT",
-      "type": "VARCHAR",
-      "size": 255,
+      "type": "TEXT",
+      "size": null,
       "nullable": true,
       "defaultValue": "",
       "isPK": false
     },
     {
       "name": "MARK_CODE_BACK",
-      "type": "VARCHAR",
-      "size": 255,
+      "type": "TEXT",
+      "size": null,
       "nullable": true,
       "defaultValue": "",
       "isPK": false
     },
     {
       "name": "FORM_CODE",
-      "type": "VARCHAR",
-      "size": 255,
+      "type": "TEXT",
+      "size": null,
       "nullable": true,
       "defaultValue": "",
       "isPK": false
     },
     {
       "name": "CHART",
-      "type": "VARCHAR",
-      "size": 255,
+      "type": "TEXT",
+      "size": null,
       "nullable": true,
       "defaultValue": "",
       "isPK": false
     },
     {
       "name": "BAR_CODE",
-      "type": "VARCHAR",
-      "size": 255,
+      "type": "TEXT",
+      "size": null,
       "nullable": true,
       "defaultValue": "",
       "isPK": false
@@ -178,24 +178,24 @@
     },
     {
       "name": "VALID_TERM",
-      "type": "VARCHAR",
-      "size": 255,
+      "type": "TEXT",
+      "size": null,
       "nullable": true,
       "defaultValue": "",
       "isPK": false
     },
     {
       "name": "STORAGE_METHOD",
-      "type": "VARCHAR",
-      "size": 255,
+      "type": "TEXT",
+      "size": null,
       "nullable": true,
       "defaultValue": "",
       "isPK": false
     },
     {
       "name": "PACK_UNIT",
-      "type": "VARCHAR",
-      "size": 255,
+      "type": "TEXT",
+      "size": null,
       "nullable": true,
       "defaultValue": "",
       "isPK": false
