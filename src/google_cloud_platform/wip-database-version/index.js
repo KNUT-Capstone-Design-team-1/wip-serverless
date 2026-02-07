@@ -12,32 +12,13 @@ app.use(
   }),
 );
 
-/**
- * 데이터베이스 버전을 조회
- * @returns
- */
-function getDatabaseVersion() {
-  if (!config?.pillData) {
-    return { success: false, message: "Invalid Config File" };
-  }
-
-  return { success: true, data: config };
-}
-
 app.get("/", (req, res) => {
   if (!authenticate(req)) {
     res.sendStatus(401);
     return;
   }
 
-  const result = getDatabaseVersion();
-
-  if (!result.success) {
-    res.status(500).send(result.message);
-    return;
-  }
-
-  res.status(200).json(result.data);
+  res.status(200).json(config);
 });
 
 functions.http("wip-database-version", app);
