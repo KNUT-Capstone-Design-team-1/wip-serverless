@@ -1,11 +1,10 @@
 const functions = require("@google-cloud/functions-framework");
 const compression = require("compression");
 const express = require("express");
+const { Storage } = require("@google-cloud/storage");
 const { authenticate } = require("./authentication");
-const pillData = require("./resources/pill_data.json");
-const markImages = require("./resources/mark_images.json");
-const nearbyPharmacies = require("./resources/nearby_pharmacies.json");
 
+const BUCKET_NAME = "wip-bucket";
 const PAGE_LIMIT = 5000;
 
 const app = express();
@@ -18,22 +17,24 @@ app.use(
 
 /**
  * 테이블 별 원천 데이터 반환
- * @param {String} table 
- * @returns 
+ * @param {String} table
+ * @returns
  */
-function getResourcesByTable(table) {
-  switch (table) {
-    case "pill_data":
-      return { success: true, resources: pillData };
+async function getResourcesByTable(table) {
+  try {
+    const filePath = `${table}.json`;
 
-    case "mark_images":
-      return { success: true, resources: markImages };
+    const storage = new Storage();
+    const file = storage.bucket(BUCKET_NAME).file(filePath);
 
-    case "nearby_pharmacies":
-      return { success: true, resources: nearbyPharmacies };
+    const [contents] = await file.download(); // 파일 전체를 메모리로 읽기
 
-    default:
-      return { success: false, message: "Invalid Table Name" };
+    const { resources } = JSON.parse(contents.toString("utf-8"));
+
+    return { success: true, resources };
+  } catch (e) {
+    console.log(`Failed to load resource data %s`, e.stack || e);
+    return { success: false, message: "Failed to load resource data" };
   }
 }
 
@@ -42,8 +43,8 @@ function getResourcesByTable(table) {
  * @param {String} 테이블 이름
  * @returns {Number} 페이지
  */
-function getResources(table, page) {
-  const tableResourceGetResult = getResourcesByTable(table);
+async function getResources(table, page) {
+  const tableResourceGetResult = await getResourcesByTable(table);
 
   if (!tableResourceGetResult.success) {
     return tableResourceGetResult;
@@ -60,7 +61,7 @@ function getResources(table, page) {
   return { success: true, data: { resource, total, totalPage, current } };
 }
 
-app.get("/", (req, res) => {
+app.get("/", async (req, res) => {
   if (!authenticate(req)) {
     res.sendStatus(401);
     return;
@@ -73,7 +74,7 @@ app.get("/", (req, res) => {
 
   const { table, page } = req.query;
 
-  const result = getResources(table, page);
+  const result = await getResources(table, page);
 
   if (!result.success) {
     res.status(500).send(result.message);
