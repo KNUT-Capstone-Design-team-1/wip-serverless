@@ -1,5 +1,13 @@
 {
-  "pillData": {
+  "pill_data": {
+    "schemaVersion": 1,
+    "dataVersion": 1
+  },
+  "mark_images": {
+    "schemaVersion": 1,
+    "dataVersion": 1
+  },
+  "nearby_pharmacies": {
     "schemaVersion": 1,
     "dataVersion": 1
   }
