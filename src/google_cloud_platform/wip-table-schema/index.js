@@ -16,10 +16,10 @@ app.use(
 
 /**
  * 테이블의 스키마를 반환
- * @param table 테이블 이름
+ * @param {String} table 테이블 이름
  * @returns
  */
-function getPillDataTableSchema(table) {
+function getTableSchema(table) {
   switch (table) {
     case "pill_data":
       return { success: true, columns: pillDataSchema.columns };
@@ -41,7 +41,7 @@ app.get("/", (req, res) => {
     return;
   }
 
-  const result = getPillDataTableSchema(req.query.table);
+  const result = getTableSchema(req.query.table);
 
   if (!result.success) {
     res.status(500).send(result.message);
