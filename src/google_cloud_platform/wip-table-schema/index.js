@@ -48,7 +48,7 @@ app.get("/", (req, res) => {
     return;
   }
 
-  res.status(200).json(result.columns);
+  res.status(200).json({ columns: result.columns });
 });
 
 functions.http("wip-table-schema", app);
