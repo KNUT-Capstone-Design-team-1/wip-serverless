@@ -1,4 +1,4 @@
-import wordData from "../words";
+import wordData from "../words.js";
 
 const STOP_WORDS = new Set(wordData.stoppedWords.map((w) => w.toLowerCase()));
 const BANNED_WORDS = new Set(wordData.bannedWords.map((w) => w.toLowerCase()));
