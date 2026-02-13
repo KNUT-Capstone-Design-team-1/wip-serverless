@@ -47,5 +47,5 @@ export async function searchUnified(db, keywords) {
 
   const { results } = await db.prepare(sql).bind(matchQuery, LIMIT).all();
 
-  return results;
+  return results.map((v) => v.ITEM_SEQ);
 }
