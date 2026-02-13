@@ -21,7 +21,7 @@ function buildMatchQuery(keywords) {
 
   const escaped = keywords.map(escapeFtsToken);
 
-  return escaped.join(` AND `);
+  return escaped.map((v) => `${v}*`).join(` AND `);
 }
 
 /**
