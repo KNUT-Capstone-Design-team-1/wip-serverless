@@ -40,7 +40,7 @@ export async function searchUnified(db, keywords) {
    SELECT u.ITEM_SEQ
    FROM unified_search_fts AS u
    WHERE u MATCH ?
-   ORDER BY bm25(u)
+   ORDER BY bm25(u) ASC
    LIMIT ?
   `;
 

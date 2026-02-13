@@ -42,6 +42,7 @@ function validate(keywords) {
   }
 
   const decodedKeywords = [];
+  const finalTokens = [];
 
   for (const keyword of keywords) {
     const decoded = getDecodedURIComponent(keyword);
@@ -138,9 +139,11 @@ function validate(keywords) {
         };
       }
     }
+
+    finalTokens.push(...tokens);
   }
 
-  return { valid: true, reason: "", normalizedKeywords };
+  return { valid: true, reason: "", finalTokens };
 }
 
 export default validate;

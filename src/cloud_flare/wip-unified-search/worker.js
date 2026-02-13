@@ -28,7 +28,7 @@ async function requestUnifiedSearch(request, env) {
   const db = env.D1;
   const results = await UnifiedSearchService.searchUnified(
     db,
-    validateResult.normalizedKeywords,
+    validateResult.finalTokens,
   );
 
   return Response.json({ results });
