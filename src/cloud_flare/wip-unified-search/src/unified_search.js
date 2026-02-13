@@ -37,11 +37,12 @@ export async function searchUnified(db, keywords) {
   }
 
   const sql = `
-   SELECT u.ITEM_SEQ
-   FROM unified_search_fts AS u
-   WHERE u MATCH ?
-   ORDER BY bm25(u) ASC
-   LIMIT ?
+    SELECT us.ITEM_SEQ
+    FROM unified_search_fts AS u
+    JOIN unified_search AS us ON us.rowid = u.rowid
+    WHERE u MATCH ?
+    ORDER BY bm25(u) ASC
+    LIMIT ?;
   `;
 
   const { results } = await db.prepare(sql).bind(matchQuery, LIMIT).all();
