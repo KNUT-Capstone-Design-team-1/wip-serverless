@@ -41,7 +41,7 @@ export async function searchUnified(db, keywords) {
     FROM unified_search_fts AS u
     JOIN unified_search AS us ON us.rowid = u.rowid
     WHERE u MATCH ?
-    ORDER BY bm25(u) ASC
+    ORDER BY bm25(unified_search_fts) ASC
     LIMIT ?;
   `;
 
