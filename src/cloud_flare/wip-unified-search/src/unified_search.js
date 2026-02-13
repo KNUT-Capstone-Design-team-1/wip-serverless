@@ -33,15 +33,15 @@ export async function searchUnified(db, keywords) {
   const matchQuery = buildMatchQuery(keywords);
 
   if (!matchQuery) {
-    return new Response("검색할 수 없는 검색어 입니다.", { status: 400 });
+    return new Response("유효하지 않은 검색어 입니다.", { status: 400 });
   }
 
   const sql = `
-    SELECT ITEM_SEQ
-    FROM unified_search
-    WHERE unified_search MATCH ?
-    ORDER BY bm25(unified_search)
-    LIMIT ?
+   SELECT u.ITEM_SEQ
+   FROM unified_search_fts AS u
+   WHERE u MATCH ?
+   ORDER BY bm25(u)
+   LIMIT ?
   `;
 
   const { results } = await db.prepare(sql).bind(matchQuery, LIMIT).all();

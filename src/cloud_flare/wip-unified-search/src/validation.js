@@ -4,7 +4,7 @@ const STOP_WORDS = new Set(wordData.stoppedWords.map((w) => w.toLowerCase()));
 const BANNED_WORDS = new Set(wordData.bannedWords.map((w) => w.toLowerCase()));
 
 const MAX_KEYWORDS = 5;
-const MIN_RAW_INPUT = 3;
+const MIN_RAW_INPUT = 2;
 const MAX_RAW_INPUT = 50;
 const MIN_TOKENS = 2;
 const MAX_TOKENS = 5;
@@ -31,7 +31,7 @@ function getDecodedURIComponent(keyword) {
  */
 function validate(keywords) {
   if (!keywords || keywords.length === 0) {
-    return { valid: false, reason: "keyword는 최소 1개 이상 필요합니다." };
+    return { valid: false, reason: "검색어는 최소 1개 이상 필요합니다." };
   }
 
   if (keywords.length > MAX_KEYWORDS) {
@@ -42,7 +42,6 @@ function validate(keywords) {
   }
 
   const decodedKeywords = [];
-  const finalTokens = [];
 
   for (const keyword of keywords) {
     const decoded = getDecodedURIComponent(keyword);
@@ -62,39 +61,41 @@ function validate(keywords) {
     return { valid: false, reason: "동일한 검색어를 반복할 수 없습니다." };
   }
 
-  for (const rawInput of normalizedKeywords) {
-    if (typeof rawInput !== "string") {
+  for (const normalizedKeyword of normalizedKeywords) {
+    if (typeof normalizedKeyword !== "string") {
       return { valid: false, reason: "문자열만 허용됩니다." };
     }
 
-    if (rawInput.length === 0) {
+    if (normalizedKeyword.length === 0) {
       return { valid: false, reason: "값이 비어 있습니다." };
     }
 
-    if (rawInput !== rawInput.trim()) {
+    if (normalizedKeyword !== normalizedKeyword.trim()) {
       return { valid: false, reason: "앞뒤 공백은 허용되지 않습니다." };
     }
 
-    if (/\s{2,}/.test(rawInput)) {
+    if (/\s{2,}/.test(normalizedKeyword)) {
       return { valid: false, reason: "연속 공백은 허용되지 않습니다." };
     }
 
-    if (!/^[A-Za-z가-힣\s]+$/.test(rawInput)) {
+    if (!/^[A-Za-z가-힣\s]+$/.test(normalizedKeyword)) {
       return { valid: false, reason: "한글과 영어만 입력 가능합니다." };
     }
 
-    if (rawInput.length < MIN_RAW_INPUT) {
+    if (normalizedKeyword.length < MIN_RAW_INPUT) {
       return { valid: false, reason: "검색어가 너무 짧습니다." };
     }
 
-    if (rawInput.length > MAX_RAW_INPUT) {
+    if (normalizedKeyword.length > MAX_RAW_INPUT) {
       return {
         valid: false,
         reason: `검색어는 ${MAX_RAW_INPUT}자 이하로 입력해주세요.`,
       };
     }
 
-    const tokens = rawInput.split(/\s+/).filter((t) => !STOP_WORDS.has(t));
+    const tokens = normalizedKeyword
+      .split(/\s+/)
+      .filter((t) => !STOP_WORDS.has(t));
 
     if (tokens.length === 0) {
       return { valid: false, reason: "의미 있는 검색어를 입력해주세요." };
@@ -137,11 +138,9 @@ function validate(keywords) {
         };
       }
     }
-
-    finalTokens.push(...tokens);
   }
 
-  return { valid: true, reason: "", tokens: [...new Set(finalTokens)] };
+  return { valid: true, reason: "", normalizedKeywords };
 }
 
 export default validate;
