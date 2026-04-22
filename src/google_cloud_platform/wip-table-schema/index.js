@@ -5,6 +5,9 @@ const { authenticate } = require("./authentication");
 const pillDataSchema = require("./schemas/pill_data.json");
 const markImagesSchema = require("./schemas/mark_images.json");
 const nearbyPharmaciesSchema = require("./schemas/nearby_pharmacies.json");
+const cannabisSchema = require("./schemas/cannabis.json");
+const narcoticsSchema = require("./schemas/narcotics.json");
+const psychotropicsSchema = require("./schemas/psychotropics.json");
 
 const app = express();
 
@@ -29,6 +32,15 @@ function getTableSchema(table) {
 
     case "nearby_pharmacies":
       return { success: true, columns: nearbyPharmaciesSchema.columns };
+
+    case "cannabis":
+      return { success: true, columns: cannabisSchema.columns };
+
+    case "narcotics":
+      return { success: true, columns: narcoticsSchema.columns };
+
+    case "psychotropics":
+      return { success: true, columns: psychotropicsSchema.columns };
 
     default:
       return { success: false, message: "Invalid Table Name" };

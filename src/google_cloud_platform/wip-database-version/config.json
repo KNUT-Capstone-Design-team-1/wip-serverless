@@ -10,5 +10,17 @@
   "nearby_pharmacies": {
     "schemaVersion": 1,
     "dataVersion": 1
+  },
+  "cannabis": {
+    "schemaVersion": 1,
+    "dataVersion": 1
+  },
+  "narcotics": {
+    "schemaVersion": 1,
+    "dataVersion": 1
+  },
+  "psychotropics": {
+    "schemaVersion": 1,
+    "dataVersion": 1
   }
 }
