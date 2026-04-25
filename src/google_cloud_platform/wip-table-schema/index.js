@@ -8,6 +8,7 @@ const nearbyPharmaciesSchema = require("./schemas/nearby_pharmacies.json");
 const cannabisSchema = require("./schemas/cannabis.json");
 const narcoticsSchema = require("./schemas/narcotics.json");
 const psychotropicsSchema = require("./schemas/psychotropics.json");
+const prohibitedListSchema = require("./schemas/prohibited_list.json");
 
 const app = express();
 
@@ -41,6 +42,9 @@ function getTableSchema(table) {
 
     case "psychotropics":
       return { success: true, columns: psychotropicsSchema.columns };
+
+    case "prohibited_list":
+      return { success: true, columns: prohibitedListSchema.columns };
 
     default:
       return { success: false, message: "Invalid Table Name" };

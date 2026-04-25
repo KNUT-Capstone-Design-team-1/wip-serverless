@@ -1,0 +1,60 @@
+{
+  "columns": [
+    {
+      "name": "genericKr",
+      "type": "TEXT",
+      "size": null,
+      "nullable": false,
+      "defaultValue": "",
+      "isPK": true
+    },
+    {
+      "name": "genericEn",
+      "type": "TEXT",
+      "size": null,
+      "nullable": true,
+      "defaultValue": "",
+      "isPK": false
+    },
+    {
+      "name": "category",
+      "type": "TEXT",
+      "size": null,
+      "nullable": true,
+      "defaultValue": "",
+      "isPK": false
+    },
+    {
+      "name": "categoryKr",
+      "type": "TEXT",
+      "size": null,
+      "nullable": true,
+      "defaultValue": "",
+      "isPK": false
+    },
+    {
+      "name": "categoryEn",
+      "type": "TEXT",
+      "size": null,
+      "nullable": true,
+      "defaultValue": "",
+      "isPK": false
+    },
+    {
+      "name": "inGameProhibited",
+      "type": "INTEGER",
+      "size": null,
+      "nullable": false,
+      "defaultValue": 1,
+      "isPK": false
+    },
+    {
+      "name": "outGameProhibited",
+      "type": "INTEGER",
+      "size": null,
+      "nullable": false,
+      "defaultValue": 1,
+      "isPK": false
+    }
+  ]
+}
