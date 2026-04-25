@@ -22,5 +22,9 @@
   "psychotropics": {
     "schemaVersion": 1,
     "dataVersion": 1
+  },
+  "prohibited_list": {
+    "schemaVersion": 1,
+    "dataVersion": 1
   }
 }
