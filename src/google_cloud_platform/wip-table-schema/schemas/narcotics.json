@@ -6,7 +6,7 @@
       "size": null,
       "nullable": false,
       "defaultValue": "",
-      "isPK": true
+      "isPK": false
     },
     {
       "name": "chemicalNameEn",
