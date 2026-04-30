@@ -19,15 +19,11 @@ app.use(
  * @returns
  */
 async function requestDetectImage(req) {
-  const result = await requestDetectImageGemini(req.body.base64);
+  const resultText = await requestDetectImageGemini(req.body.base64);
 
-  console.log(
-    "gemini result",
-    JSON.stringify(result.response.candidates[0], null, 2),
-  );
+  console.log("gemini result", resultText);
 
-  const response =
-    result.response.candidates[0].content.parts[0].functionCall.args;
+  const response = JSON.parse(resultText);
 
   return response;
 }
