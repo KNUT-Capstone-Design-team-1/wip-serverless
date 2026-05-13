@@ -17,6 +17,14 @@
       "isPK": false
     },
     {
+      "name": "ITEM_ENG_NAME",
+      "type": "TEXT",
+      "size": null,
+      "nullable": true,
+      "defaultValue": "",
+      "isPK": false
+    },
+    {
       "name": "ENTP_SEQ",
       "type": "TEXT",
       "size": null,
@@ -29,6 +37,38 @@
       "type": "TEXT",
       "size": null,
       "nullable": false,
+      "defaultValue": "",
+      "isPK": false
+    },
+    {
+      "name": "ENTP_ENG_NAME",
+      "type": "TEXT",
+      "size": null,
+      "nullable": false,
+      "defaultValue": "",
+      "isPK": false
+    },
+    {
+      "name": "ITEM_PERMIT_DATE",
+      "type": "TEXT",
+      "size": null,
+      "nullable": true,
+      "defaultValue": "",
+      "isPK": false
+    },
+    {
+      "name": "ENTP_PERMIT_NO",
+      "type": "TEXT",
+      "size": null,
+      "nullable": true,
+      "defaultValue": "",
+      "isPK": false
+    },
+    {
+      "name": "CHART",
+      "type": "TEXT",
+      "size": null,
+      "nullable": true,
       "defaultValue": "",
       "isPK": false
     },
@@ -97,7 +137,39 @@
       "isPK": false
     },
     {
+      "name": "LENGTH_LONG",
+      "type": "TEXT",
+      "size": null,
+      "nullable": true,
+      "defaultValue": "",
+      "isPK": false
+    },
+    {
+      "name": "LENGTH_SHORT",
+      "type": "TEXT",
+      "size": null,
+      "nullable": true,
+      "defaultValue": "",
+      "isPK": false
+    },
+    {
+      "name": "LENGTH_THICK",
+      "type": "TEXT",
+      "size": null,
+      "nullable": true,
+      "defaultValue": "",
+      "isPK": false
+    },
+    {
       "name": "IMG_REGIST_TS",
+      "type": "TEXT",
+      "size": null,
+      "nullable": true,
+      "defaultValue": "",
+      "isPK": false
+    },
+    {
+      "name": "CLASS_NO",
       "type": "TEXT",
       "size": null,
       "nullable": true,
@@ -121,7 +193,39 @@
       "isPK": false
     },
     {
-      "name": "ITEM_PERMIT_DATE",
+      "name": "FORM_CODE",
+      "type": "TEXT",
+      "size": null,
+      "nullable": true,
+      "defaultValue": "",
+      "isPK": false
+    },
+    {
+      "name": "DRUG_SHAPE_FRONT",
+      "type": "TEXT",
+      "size": null,
+      "nullable": true,
+      "defaultValue": "",
+      "isPK": false
+    },
+    {
+      "name": "DRUG_SHAPE_BACK",
+      "type": "TEXT",
+      "size": null,
+      "nullable": true,
+      "defaultValue": "",
+      "isPK": false
+    },
+    {
+      "name": "MARK_IMAGE_FRONT",
+      "type": "TEXT",
+      "size": null,
+      "nullable": true,
+      "defaultValue": "",
+      "isPK": false
+    },
+    {
+      "name": "MARK_IMAGE_BACK",
       "type": "TEXT",
       "size": null,
       "nullable": true,
@@ -145,7 +249,7 @@
       "isPK": false
     },
     {
-      "name": "FORM_CODE",
+      "name": "CHANGE_DATE",
       "type": "TEXT",
       "size": null,
       "nullable": true,
@@ -153,7 +257,23 @@
       "isPK": false
     },
     {
-      "name": "CHART",
+      "name": "BUSINESS_LICENCE_NUMBER",
+      "type": "TEXT",
+      "size": null,
+      "nullable": true,
+      "defaultValue": "",
+      "isPK": false
+    },
+    {
+      "name": "ITEM_ENG_NAME",
+      "type": "TEXT",
+      "size": null,
+      "nullable": true,
+      "defaultValue": "",
+      "isPK": false
+    },
+    {
+      "name": "COVERAGE_ENG_NAME",
       "type": "TEXT",
       "size": null,
       "nullable": true,
@@ -162,6 +282,31 @@
     },
     {
       "name": "BAR_CODE",
+      "type": "TEXT",
+      "size": null,
+      "nullable": true,
+      "defaultValue": "",
+      "isPK": false
+    },
+
+    {
+      "name": "APPROVAL_TYPE",
+      "type": "TEXT",
+      "size": null,
+      "nullable": true,
+      "defaultValue": "",
+      "isPK": false
+    },
+    {
+      "name": "CANCEL_STATUS",
+      "type": "TEXT",
+      "size": null,
+      "nullable": true,
+      "defaultValue": "",
+      "isPK": false
+    },
+    {
+      "name": "CANCEL_DATE",
       "type": "TEXT",
       "size": null,
       "nullable": true,
@@ -177,7 +322,39 @@
       "isPK": false
     },
     {
-      "name": "VALID_TERM",
+      "name": "MATERIAL_ENG_NAME",
+      "type": "TEXT",
+      "size": null,
+      "nullable": true,
+      "defaultValue": "",
+      "isPK": false
+    },
+    {
+      "name": "EE_DOC_DATA",
+      "type": "TEXT",
+      "size": null,
+      "nullable": true,
+      "defaultValue": "",
+      "isPK": false
+    },
+    {
+      "name": "UD_DOC_DATA",
+      "type": "TEXT",
+      "size": null,
+      "nullable": true,
+      "defaultValue": "",
+      "isPK": false
+    },
+    {
+      "name": "NB_DOC_DATA",
+      "type": "TEXT",
+      "size": null,
+      "nullable": true,
+      "defaultValue": "",
+      "isPK": false
+    },
+    {
+      "name": "ATT_DOC_DATA",
       "type": "TEXT",
       "size": null,
       "nullable": true,
@@ -193,7 +370,71 @@
       "isPK": false
     },
     {
+      "name": "VALID_TERM",
+      "type": "TEXT",
+      "size": null,
+      "nullable": true,
+      "defaultValue": "",
+      "isPK": false
+    },
+    {
       "name": "PACK_UNIT",
+      "type": "TEXT",
+      "size": null,
+      "nullable": true,
+      "defaultValue": "",
+      "isPK": false
+    },
+    {
+      "name": "INSURANCE_CODE",
+      "type": "TEXT",
+      "size": null,
+      "nullable": true,
+      "defaultValue": "",
+      "isPK": false
+    },
+    {
+      "name": "DRUG_CLASS",
+      "type": "TEXT",
+      "size": null,
+      "nullable": true,
+      "defaultValue": "",
+      "isPK": false
+    },
+    {
+      "name": "FINISH_MATERIAL_YN",
+      "type": "TEXT",
+      "size": null,
+      "nullable": true,
+      "defaultValue": "",
+      "isPK": false
+    },
+    {
+      "name": "NEW_DRUG_YN",
+      "type": "TEXT",
+      "size": null,
+      "nullable": true,
+      "defaultValue": "",
+      "isPK": false
+    },
+    {
+      "name": "INDUTY_CODE",
+      "type": "TEXT",
+      "size": null,
+      "nullable": true,
+      "defaultValue": "",
+      "isPK": false
+    },
+    {
+      "name": "CHANGE_CONTENT",
+      "type": "TEXT",
+      "size": null,
+      "nullable": true,
+      "defaultValue": "",
+      "isPK": false
+    },
+    {
+      "name": "TOTAL_CONTENT",
       "type": "TEXT",
       "size": null,
       "nullable": true,
@@ -210,6 +451,38 @@
     },
     {
       "name": "INGR_NAME",
+      "type": "TEXT",
+      "size": null,
+      "nullable": true,
+      "defaultValue": "",
+      "isPK": false
+    },
+    {
+      "name": "ATC_CODE",
+      "type": "TEXT",
+      "size": null,
+      "nullable": true,
+      "defaultValue": "",
+      "isPK": false
+    },
+    {
+      "name": "ENTP_BIZ_NO",
+      "type": "TEXT",
+      "size": null,
+      "nullable": true,
+      "defaultValue": "",
+      "isPK": false
+    },
+    {
+      "name": "RARE_DRUG_YN",
+      "type": "TEXT",
+      "size": null,
+      "nullable": true,
+      "defaultValue": "",
+      "isPK": false
+    },
+    {
+      "name": "OEM_ENTP_NAME",
       "type": "TEXT",
       "size": null,
       "nullable": true,
