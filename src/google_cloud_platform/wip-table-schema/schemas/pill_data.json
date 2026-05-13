@@ -265,14 +265,6 @@
       "isPK": false
     },
     {
-      "name": "ITEM_ENG_NAME",
-      "type": "TEXT",
-      "size": null,
-      "nullable": true,
-      "defaultValue": "",
-      "isPK": false
-    },
-    {
       "name": "COVERAGE_ENG_NAME",
       "type": "TEXT",
       "size": null,
