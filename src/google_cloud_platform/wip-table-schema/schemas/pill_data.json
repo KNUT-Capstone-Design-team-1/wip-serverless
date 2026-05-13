@@ -361,6 +361,22 @@
       "isPK": false
     },
     {
+      "name": "REEXAM_TARGET_YN",
+      "type": "TEXT",
+      "size": null,
+      "nullable": true,
+      "defaultValue": "",
+      "isPK": false
+    },
+    {
+      "name": "REEXAM_CONT",
+      "type": "TEXT",
+      "size": null,
+      "nullable": true,
+      "defaultValue": "",
+      "isPK": false
+    },
+    {
       "name": "VALID_TERM",
       "type": "TEXT",
       "size": null,
