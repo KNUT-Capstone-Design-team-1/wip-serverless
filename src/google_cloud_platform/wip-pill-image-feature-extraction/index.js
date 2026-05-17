@@ -19,7 +19,7 @@ app.use(
  * @returns
  */
 async function requestDetectImage(req) {
-  const resultText = await requestDetectImageGemini(req.body.base64);
+  const resultText = await requestDetectImageGemini(req.body);
 
   console.log("gemini result", resultText);
 

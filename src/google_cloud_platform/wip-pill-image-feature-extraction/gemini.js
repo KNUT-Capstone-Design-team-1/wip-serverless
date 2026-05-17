@@ -98,11 +98,12 @@ const vertexai = new GoogleGenAI({
 
 /**
  * 제미나이 API에 특징 추출 요청
- * @param {String} base64 이미지 base64 코드
+ * @param {Object} data 이미지 데이터 (base64 코드 포함)
+ *   - { front: string, back: string }
  * @returns
  */
-async function requestDetectImageGemini(base64) {
-  const filePart = { inlineData: { data: base64, mimeType: "image/jpeg" } };
+async function requestDetectImageGemini(data) {
+  const filePart = { inlineData: { data, mimeType: "image/jpeg" } };
 
   const request = {
     model: process.env.MODEL,
