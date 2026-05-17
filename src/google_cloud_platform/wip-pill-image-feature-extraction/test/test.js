@@ -21,7 +21,8 @@ async function test() {
         const response = await axios.post(
             "http://localhost:8080",
             {
-                base64: imageBase64,
+                front: imageBase64,
+                back: imageBase64,
             },
             {
                 headers: { apiversion: "2" },
