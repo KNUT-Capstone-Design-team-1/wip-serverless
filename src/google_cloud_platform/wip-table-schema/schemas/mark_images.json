@@ -20,7 +20,7 @@
       "name": "base64",
       "type": "BLOB",
       "size": null,
-      "nullable": false,
+      "nullable": true,
       "defaultValue": "",
       "isPK": false
     }
