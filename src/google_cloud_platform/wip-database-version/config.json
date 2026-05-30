@@ -1,30 +1,30 @@
 {
   "pill_data": {
-    "schemaVersion": 1,
-    "dataVersion": 1
+    "schemaVersion": 20260530,
+    "dataVersion": 20260530
   },
   "mark_images": {
-    "schemaVersion": 1,
-    "dataVersion": 1
+    "schemaVersion": 20260530,
+    "dataVersion": 20260530
   },
   "nearby_pharmacies": {
-    "schemaVersion": 1,
-    "dataVersion": 1
+    "schemaVersion": 20260530,
+    "dataVersion": 20260530
   },
   "cannabis": {
-    "schemaVersion": 1,
-    "dataVersion": 1
+    "schemaVersion": 20260530,
+    "dataVersion": 20260530
   },
   "narcotics": {
-    "schemaVersion": 1,
-    "dataVersion": 1
+    "schemaVersion": 20260530,
+    "dataVersion": 20260530
   },
   "psychotropics": {
-    "schemaVersion": 1,
-    "dataVersion": 1
+    "schemaVersion": 20260530,
+    "dataVersion": 20260530
   },
   "prohibited_list": {
-    "schemaVersion": 1,
-    "dataVersion": 1
+    "schemaVersion": 20260530,
+    "dataVersion": 20260530
   }
 }
