@@ -3,7 +3,6 @@
     {
       "name": "chemicalNameKr",
       "type": "TEXT",
-      "size": null,
       "nullable": false,
       "defaultValue": "",
       "isPK": false
@@ -11,7 +10,6 @@
     {
       "name": "chemicalNameEn",
       "type": "TEXT",
-      "size": null,
       "nullable": true,
       "defaultValue": "",
       "isPK": false
@@ -19,7 +17,6 @@
     {
       "name": "synonyms",
       "type": "TEXT",
-      "size": null,
       "nullable": true,
       "defaultValue": "",
       "isPK": false
@@ -27,7 +24,6 @@
     {
       "name": "casNumber",
       "type": "TEXT",
-      "size": null,
       "nullable": true,
       "defaultValue": "",
       "isPK": false
@@ -35,7 +31,6 @@
     {
       "name": "isomerCasNumber",
       "type": "TEXT",
-      "size": null,
       "nullable": true,
       "defaultValue": "",
       "isPK": false
@@ -43,7 +38,6 @@
     {
       "name": "molecularFormula",
       "type": "TEXT",
-      "size": null,
       "nullable": true,
       "defaultValue": "",
       "isPK": false
@@ -51,7 +45,6 @@
     {
       "name": "molecularWeight",
       "type": "TEXT",
-      "size": null,
       "nullable": true,
       "defaultValue": "",
       "isPK": false

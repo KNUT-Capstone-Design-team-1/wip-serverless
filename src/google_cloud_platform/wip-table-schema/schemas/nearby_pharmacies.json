@@ -3,7 +3,6 @@
     {
       "name": "id",
       "type": "TEXT",
-      "size": null,
       "nullable": false,
       "defaultValue": "",
       "isPK": true
@@ -11,7 +10,6 @@
     {
       "name": "name",
       "type": "TEXT",
-      "size": null,
       "nullable": false,
       "defaultValue": "",
       "isPK": false
@@ -19,7 +17,6 @@
     {
       "name": "states",
       "type": "TEXT",
-      "size": null,
       "nullable": true,
       "defaultValue": "",
       "isPK": false
@@ -27,7 +24,6 @@
     {
       "name": "region",
       "type": "TEXT",
-      "size": null,
       "nullable": true,
       "defaultValue": "",
       "isPK": false
@@ -35,7 +31,6 @@
     {
       "name": "district",
       "type": "TEXT",
-      "size": null,
       "nullable": true,
       "defaultValue": "",
       "isPK": false
@@ -43,7 +38,6 @@
     {
       "name": "postalCode",
       "type": "TEXT",
-      "size": null,
       "nullable": true,
       "defaultValue": "",
       "isPK": false
@@ -51,7 +45,6 @@
     {
       "name": "address",
       "type": "TEXT",
-      "size": null,
       "nullable": true,
       "defaultValue": "",
       "isPK": false
@@ -59,7 +52,6 @@
     {
       "name": "telephone",
       "type": "TEXT",
-      "size": null,
       "nullable": true,
       "defaultValue": "",
       "isPK": false
@@ -67,7 +59,6 @@
     {
       "name": "openData",
       "type": "INTEGER",
-      "size": null,
       "nullable": true,
       "defaultValue": "",
       "isPK": false
@@ -75,7 +66,6 @@
     {
       "name": "X",
       "type": "DOUBLE",
-      "size": null,
       "nullable": true,
       "defaultValue": "",
       "isPK": false
@@ -83,7 +73,6 @@
     {
       "name": "Y",
       "type": "DOUBLE",
-      "size": null,
       "nullable": true,
       "defaultValue": "",
       "isPK": false
