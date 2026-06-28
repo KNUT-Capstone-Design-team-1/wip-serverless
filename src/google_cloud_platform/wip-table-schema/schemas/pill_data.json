@@ -22,13 +22,6 @@
       "isPK": false
     },
     {
-      "name": "ENTP_SEQ",
-      "type": "TEXT",
-      "nullable": false,
-      "defaultValue": "",
-      "isPK": false
-    },
-    {
       "name": "ENTP_NAME",
       "type": "TEXT",
       "nullable": false,
@@ -44,13 +37,6 @@
     },
     {
       "name": "ITEM_PERMIT_DATE",
-      "type": "TEXT",
-      "nullable": true,
-      "defaultValue": "",
-      "isPK": false
-    },
-    {
-      "name": "ENTP_PERMIT_NO",
       "type": "TEXT",
       "nullable": true,
       "defaultValue": "",
@@ -141,13 +127,6 @@
       "isPK": false
     },
     {
-      "name": "IMG_REGIST_TS",
-      "type": "TEXT",
-      "nullable": true,
-      "defaultValue": "",
-      "isPK": false
-    },
-    {
       "name": "CLASS_NO",
       "type": "TEXT",
       "nullable": true,
@@ -225,42 +204,7 @@
       "isPK": false
     },
     {
-      "name": "BUSINESS_LICENCE_NUMBER",
-      "type": "TEXT",
-      "nullable": true,
-      "defaultValue": "",
-      "isPK": false
-    },
-    {
       "name": "COVERAGE_ENG_NAME",
-      "type": "TEXT",
-      "nullable": true,
-      "defaultValue": "",
-      "isPK": false
-    },
-    {
-      "name": "BAR_CODE",
-      "type": "TEXT",
-      "nullable": true,
-      "defaultValue": "",
-      "isPK": false
-    },
-    {
-      "name": "APPROVAL_TYPE",
-      "type": "TEXT",
-      "nullable": true,
-      "defaultValue": "",
-      "isPK": false
-    },
-    {
-      "name": "CANCEL_STATUS",
-      "type": "TEXT",
-      "nullable": true,
-      "defaultValue": "",
-      "isPK": false
-    },
-    {
-      "name": "CANCEL_DATE",
       "type": "TEXT",
       "nullable": true,
       "defaultValue": "",
@@ -281,49 +225,7 @@
       "isPK": false
     },
     {
-      "name": "EE_DOC_DATA",
-      "type": "TEXT",
-      "nullable": true,
-      "defaultValue": "",
-      "isPK": false
-    },
-    {
-      "name": "UD_DOC_DATA",
-      "type": "TEXT",
-      "nullable": true,
-      "defaultValue": "",
-      "isPK": false
-    },
-    {
-      "name": "NB_DOC_DATA",
-      "type": "TEXT",
-      "nullable": true,
-      "defaultValue": "",
-      "isPK": false
-    },
-    {
-      "name": "ATT_DOC_DATA",
-      "type": "TEXT",
-      "nullable": true,
-      "defaultValue": "",
-      "isPK": false
-    },
-    {
       "name": "STORAGE_METHOD",
-      "type": "TEXT",
-      "nullable": true,
-      "defaultValue": "",
-      "isPK": false
-    },
-    {
-      "name": "REEXAM_TARGET_YN",
-      "type": "TEXT",
-      "nullable": true,
-      "defaultValue": "",
-      "isPK": false
-    },
-    {
-      "name": "REEXAM_CONT",
       "type": "TEXT",
       "nullable": true,
       "defaultValue": "",
@@ -401,20 +303,6 @@
     },
     {
       "name": "INGR_NAME",
-      "type": "TEXT",
-      "nullable": true,
-      "defaultValue": "",
-      "isPK": false
-    },
-    {
-      "name": "ATC_CODE",
-      "type": "TEXT",
-      "nullable": true,
-      "defaultValue": "",
-      "isPK": false
-    },
-    {
-      "name": "ENTP_BIZ_NO",
       "type": "TEXT",
       "nullable": true,
       "defaultValue": "",
