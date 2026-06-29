@@ -7,13 +7,15 @@ const textPart = {
 const responseSchema = {
   type: Type.OBJECT,
   properties: {
-    PRINT: {
-      type: Type.ARRAY,
-      items: {
-        type: Type.STRING,
-      },
+    PRINT_FRONT: {
+      type: Type.STRING,
       description:
-        "알약의 각인(글자, 숫자, 기호) 목록. 90% 이상의 신뢰도를 가진 텍스트만 포함됩니다.",
+        "첫번째 이미지에 있는 알약의 각인(글자, 숫자, 기호). 90% 이상의 신뢰도를 가진 텍스트만 포함됩니다.",
+    },
+    PRINT_BACK: {
+      type: Type.STRING,
+      description:
+        "두번째 이미지에 있는 알약의 각인(글자, 숫자, 기호). 90% 이상의 신뢰도를 가진 텍스트만 포함됩니다.",
     },
     SHAPE: {
       type: Type.ARRAY,
@@ -63,7 +65,7 @@ const responseSchema = {
         "인식된 알약의 색상 목록. 조명에 따라 가능한 모든 색상이 포함될 수 있습니다.",
     },
   },
-  required: ["PRINT", "SHAPE", "COLOR"],
+  required: ["PRINT_FRONT", "PRINT_BACK", "SHAPE", "COLOR"],
   description: "이미지에서 추출한 알약의 상세 정보",
 };
 
@@ -73,15 +75,19 @@ const systemPrompt = {
   
   Follow these instructions precisely for each field defined in the output schema:
   
-  1. **PRINT**:
+  1. **PRINT_FRONT**:
     - Analyze all provided views of the pill to identify any imprinted text, numbers, or symbols.
     - Only include markings where your recognition confidence is 90% or higher.
   
-  2. **SHAPE**:
+  2. **PRINT_BACK**:
+    - Analyze all provided views of the pill to identify any imprinted text, numbers, or symbols.
+    - Only include markings where your recognition confidence is 90% or higher.
+  
+  3. **SHAPE**:
     - Identify all plausible shapes for the pill based on all views.
     - Remember that viewing angles can be misleading (e.g., an 'oblong' pill might also appear 'oval').
   
-  3. **COLOR**:
+  4. **COLOR**:
     - Identify all plausible colors for the pill based on all views.
     - Remember that lighting and shadows can affect color perception.
   
@@ -115,6 +121,8 @@ async function requestDetectImageGemini(data) {
       systemInstruction: { parts: [systemPrompt] },
       responseMimeType: "application/json",
       responseSchema: responseSchema,
+      temperature: 0.6,
+      topP: 0.95,
       thinkingConfig: {
         thinkingLevel: ThinkingLevel.MINIMAL,
       },
