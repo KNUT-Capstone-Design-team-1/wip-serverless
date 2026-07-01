@@ -5,7 +5,7 @@ const { Storage } = require("@google-cloud/storage");
 const { authenticate } = require("./authentication");
 
 const BUCKET_NAME = "wip-bucket";
-const PAGE_LIMIT = 5000;
+const PAGE_LIMIT = 2500;
 
 const app = express();
 
