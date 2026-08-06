@@ -27,9 +27,17 @@ function getDecodedURIComponent(keyword) {
 /**
  * 요청 밸리데이션
  * @param {string[]} keywords 검색 키워드 목록
+ * @param {number} limit 검색 결과 최대 개수
  * @returns
  */
-function validate(keywords) {
+function validate(keywords, limit) {
+  if (Number.isNaN(limit) || limit < 1 || limit > 50) {
+    return {
+      valid: false,
+      reason: "Invalid limit. It must be an integer between 1 and 50.",
+    };
+  }
+
   if (!keywords || keywords.length === 0) {
     return { valid: false, reason: "검색어는 최소 1개 이상 필요합니다." };
   }

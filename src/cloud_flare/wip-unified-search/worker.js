@@ -18,9 +18,17 @@ import { verifyToken } from "./src/authentication.js";
  * @returns
  */
 async function requestUnifiedSearch(request, env) {
-  const keywords = new URL(request.url).searchParams.getAll("keyword");
+  const url = new URL(request.url);
 
-  const validateResult = validate(keywords);
+  const keywords = url.searchParams.getAll("keyword");
+  const limitStr = url.searchParams.get("limit");
+
+  let limit = 30;
+  if (limitStr !== null) {
+    limit = parseInt(limitStr, 10);
+  }
+
+  const validateResult = validate(keywords, limit);
   if (!validateResult.valid) {
     return new Response(validateResult.reason, { status: 400 });
   }
@@ -29,6 +37,7 @@ async function requestUnifiedSearch(request, env) {
   const results = await UnifiedSearchService.searchUnified(
     db,
     validateResult.finalTokens,
+    limit,
   );
 
   return Response.json({ results });

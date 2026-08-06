@@ -1,5 +1,3 @@
-const LIMIT = 30;
-
 /**
  * FTS5 안전 토큰 이스케이프
  * @param {string} token 토큰
@@ -28,8 +26,9 @@ function buildMatchQuery(keywords) {
  * unified_search 조회
  * @param {Object} db 데이터베이스 객체
  * @param {string[]} keywords 검색 키워드 목록
+ * @param {number} [limit=30] 최대 검색 결과 개수
  */
-export async function searchUnified(db, keywords) {
+export async function searchUnified(db, keywords, limit = 30) {
   const matchQuery = buildMatchQuery(keywords);
 
   if (!matchQuery) {
@@ -45,7 +44,7 @@ export async function searchUnified(db, keywords) {
     LIMIT ?;
   `;
 
-  const { results } = await db.prepare(sql).bind(matchQuery, LIMIT).all();
+  const { results } = await db.prepare(sql).bind(matchQuery, limit).all();
 
   return results.map((v) => v.ITEM_SEQ);
 }
