@@ -5,7 +5,7 @@
   },
   "mark_images": {
     "schemaVersion": 20260530,
-    "dataVersion": 20260530
+    "dataVersion": 20260810
   },
   "nearby_pharmacies": {
     "schemaVersion": 20260530,
@@ -13,18 +13,18 @@
   },
   "cannabis": {
     "schemaVersion": 20260530,
-    "dataVersion": 20260530
+    "dataVersion": 20260810
   },
   "narcotics": {
     "schemaVersion": 20260530,
-    "dataVersion": 20260530
+    "dataVersion": 20260810
   },
   "psychotropics": {
     "schemaVersion": 20260530,
-    "dataVersion": 20260530
+    "dataVersion": 20260810
   },
   "prohibited_list": {
     "schemaVersion": 20260530,
-    "dataVersion": 20260530
+    "dataVersion": 20260810
   }
 }
