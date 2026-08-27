@@ -4,9 +4,7 @@ const STOP_WORDS = new Set(wordData.stoppedWords.map((w) => w.toLowerCase()));
 const BANNED_WORDS = new Set(wordData.bannedWords.map((w) => w.toLowerCase()));
 
 const MAX_KEYWORDS = 5;
-const MIN_RAW_INPUT = 2;
 const MAX_RAW_INPUT = 50;
-const MIN_TOKENS = 2;
 const MAX_TOKENS = 5;
 const MIN_ENG_TOKENS = 3;
 
@@ -91,10 +89,6 @@ function validate(keywords, limit) {
       return { valid: false, reason: "한글과 영어만 입력 가능합니다." };
     }
 
-    if (normalizedKeyword.length < MIN_RAW_INPUT) {
-      return { valid: false, reason: "검색어가 너무 짧습니다." };
-    }
-
     if (normalizedKeyword.length > MAX_RAW_INPUT) {
       return {
         valid: false,
@@ -131,13 +125,6 @@ function validate(keywords, limit) {
     for (const token of tokens) {
       if (/^(.)\1+$/.test(token)) {
         return { valid: false, reason: "의미 있는 검색어를 입력해주세요." };
-      }
-
-      if (token.length < MIN_TOKENS) {
-        return {
-          valid: false,
-          reason: `각 단어는 ${MIN_TOKENS}글자 이상이어야 합니다.`,
-        };
       }
 
       if (/^[a-z]+$/.test(token) && token.length < MIN_ENG_TOKENS) {
