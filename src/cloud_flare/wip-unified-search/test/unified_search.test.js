@@ -115,7 +115,7 @@ async function runTests() {
 
     assert.ok(executedSql.includes("LIMIT ?"));
     assert.ok(executedSql.includes("ORDER BY"));
-    assert.ok(executedSql.includes("bm25(unified_search_fts) ASC,"));
+    assert.ok(executedSql.includes("rank ASC,"));
     assert.ok(executedSql.includes("unified_search_fts.rowid ASC"));
     assert.strictEqual(executedParams[1], 4); // limit + 1 = 4
     assert.strictEqual(result.hasMore, true);
@@ -164,7 +164,7 @@ async function runTests() {
       cursorData: { score: -3.0, rowid: 3 },
     });
 
-    assert.ok(executedSql.includes("bm25(unified_search_fts) > ?"));
+    assert.ok(executedSql.includes("rank > ?"));
     assert.strictEqual(result.hasMore, false);
     assert.strictEqual(result.results.length, 2);
     assert.strictEqual(result.nextCursor, null);

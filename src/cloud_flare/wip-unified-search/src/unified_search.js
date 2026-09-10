@@ -21,13 +21,23 @@ function buildMatchQuery(keywords) {
     return null;
   }
 
-  const escapedTokens = keywords.map(escapeFtsToken);
+  // 1글자 단어는 불필요한 대량 스캔을 방지하기 위해 완전일치, 2글자 이상은 prefix 매칭
+  const escapedTokens = keywords.map((token) => {
+    const escaped = escapeFtsToken(token);
+    const isSingleChar = token.length === 1;
 
-  return escapedTokens.map((v) => `${v}*`).join(" AND ");
+    if (isSingleChar) {
+      return escaped;
+    }
+
+    return `${escaped}*`;
+  });
+
+  return escapedTokens.join(" AND ");
 }
 
 /**
- * SQL 및 파라미터 빌더
+ * SQL 및 파라미터 빌더 (FTS5 rank 최적화 + 2단계 서브쿼리 JOIN)
  * @param {string} matchQuery
  * @param {number} fetchLimit
  * @param {{ score: number, rowid: number }|null} cursorData
@@ -45,15 +55,15 @@ function buildSearchQueryAndParams(matchQuery, fetchLimit, cursorData) {
       FROM (
         SELECT
           unified_search_fts.rowid AS row_id,
-          bm25(unified_search_fts) AS score
+          rank AS score
         FROM unified_search_fts
         WHERE unified_search_fts MATCH ?
           AND (
-            bm25(unified_search_fts) > ?
-            OR (bm25(unified_search_fts) = ? AND unified_search_fts.rowid > ?)
+            rank > ?
+            OR (rank = ? AND unified_search_fts.rowid > ?)
           )
         ORDER BY
-          bm25(unified_search_fts) ASC,
+          rank ASC,
           unified_search_fts.rowid ASC
         LIMIT ?
       ) AS matched
@@ -82,11 +92,11 @@ function buildSearchQueryAndParams(matchQuery, fetchLimit, cursorData) {
     FROM (
       SELECT
         unified_search_fts.rowid AS row_id,
-        bm25(unified_search_fts) AS score
+        rank AS score
       FROM unified_search_fts
       WHERE unified_search_fts MATCH ?
       ORDER BY
-        bm25(unified_search_fts) ASC,
+        rank ASC,
         unified_search_fts.rowid ASC
       LIMIT ?
     ) AS matched
