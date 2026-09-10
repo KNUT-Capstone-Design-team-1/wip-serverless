@@ -40,19 +40,27 @@ function buildSearchQueryAndParams(matchQuery, fetchLimit, cursorData) {
     const sqlWithCursor = `
       SELECT
         unified_search.ITEM_SEQ,
-        bm25(unified_search_fts) AS score,
-        unified_search_fts.rowid AS row_id
-      FROM unified_search_fts
-      JOIN unified_search ON unified_search.rowid = unified_search_fts.rowid
-      WHERE unified_search_fts MATCH ?
-        AND (
-          bm25(unified_search_fts) > ?
-          OR (bm25(unified_search_fts) = ? AND unified_search_fts.rowid > ?)
-        )
+        matched.score,
+        matched.row_id
+      FROM (
+        SELECT
+          unified_search_fts.rowid AS row_id,
+          bm25(unified_search_fts) AS score
+        FROM unified_search_fts
+        WHERE unified_search_fts MATCH ?
+          AND (
+            bm25(unified_search_fts) > ?
+            OR (bm25(unified_search_fts) = ? AND unified_search_fts.rowid > ?)
+          )
+        ORDER BY
+          bm25(unified_search_fts) ASC,
+          unified_search_fts.rowid ASC
+        LIMIT ?
+      ) AS matched
+      JOIN unified_search ON unified_search.rowid = matched.row_id
       ORDER BY
-        bm25(unified_search_fts) ASC,
-        unified_search_fts.rowid ASC
-      LIMIT ?;
+        matched.score ASC,
+        matched.row_id ASC;
     `;
 
     const paramsWithCursor = [
@@ -69,15 +77,23 @@ function buildSearchQueryAndParams(matchQuery, fetchLimit, cursorData) {
   const sqlWithoutCursor = `
     SELECT
       unified_search.ITEM_SEQ,
-      bm25(unified_search_fts) AS score,
-      unified_search_fts.rowid AS row_id
-    FROM unified_search_fts
-    JOIN unified_search ON unified_search.rowid = unified_search_fts.rowid
-    WHERE unified_search_fts MATCH ?
+      matched.score,
+      matched.row_id
+    FROM (
+      SELECT
+        unified_search_fts.rowid AS row_id,
+        bm25(unified_search_fts) AS score
+      FROM unified_search_fts
+      WHERE unified_search_fts MATCH ?
+      ORDER BY
+        bm25(unified_search_fts) ASC,
+        unified_search_fts.rowid ASC
+      LIMIT ?
+    ) AS matched
+    JOIN unified_search ON unified_search.rowid = matched.row_id
     ORDER BY
-      bm25(unified_search_fts) ASC,
-      unified_search_fts.rowid ASC
-    LIMIT ?;
+      matched.score ASC,
+      matched.row_id ASC;
   `;
 
   const paramsWithoutCursor = [matchQuery, fetchLimit];
