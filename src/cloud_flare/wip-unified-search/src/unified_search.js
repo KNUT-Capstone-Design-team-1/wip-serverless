@@ -118,7 +118,7 @@ function generateNextCursor(hasMore, items, canonicalQuery, limit) {
  * @param {string} options.canonicalQuery 정규화된 쿼리 문자열
  * @param {number} [options.limit=30] 최대 검색 결과 개수
  * @param {{ score: number, rowid: number }|null} [options.cursorData=null] 커서 정보
- * @returns {Promise<{ results: string[], items: string[], nextCursor: string|null, hasMore: boolean }>}
+ * @returns {Promise<{ results: string[], nextCursor: string|null, hasMore: boolean }>}
  */
 export async function searchUnified(
   db,
@@ -154,8 +154,8 @@ export async function searchUnified(
 
   return {
     results: itemSeqs,
-    items: itemSeqs,
     nextCursor,
     hasMore,
   };
 }
+

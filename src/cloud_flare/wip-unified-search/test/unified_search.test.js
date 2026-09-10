@@ -119,8 +119,7 @@ async function runTests() {
     assert.ok(executedSql.includes("unified_search_fts.rowid ASC"));
     assert.strictEqual(executedParams[1], 4); // limit + 1 = 4
     assert.strictEqual(result.hasMore, true);
-    assert.strictEqual(result.items.length, 3);
-    assert.deepStrictEqual(result.items, ["1001", "1002", "1003"]);
+    assert.strictEqual(result.results.length, 3);
     assert.deepStrictEqual(result.results, ["1001", "1002", "1003"]);
     assert.ok(result.nextCursor);
 
@@ -167,9 +166,9 @@ async function runTests() {
 
     assert.ok(executedSql.includes("bm25(unified_search_fts) > ?"));
     assert.strictEqual(result.hasMore, false);
-    assert.strictEqual(result.items.length, 2);
+    assert.strictEqual(result.results.length, 2);
     assert.strictEqual(result.nextCursor, null);
-    assert.deepStrictEqual(result.items, ["1004", "1005"]);
+    assert.deepStrictEqual(result.results, ["1004", "1005"]);
   }
 
   console.log("All unit tests passed successfully!");
