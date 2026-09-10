@@ -1,4 +1,4 @@
-export const CACHE_MAX_AGE_SECONDS = 12 * 60 * 60; // 12시간 (43,200초)
+export const CACHE_MAX_AGE_SECONDS = 30 * 24 * 60 * 60; // 30일 (2,592,000초)
 const MEMORY_CACHE_MAX_ENTRIES = 500;
 
 // Worker In-Memory LRU Cache
