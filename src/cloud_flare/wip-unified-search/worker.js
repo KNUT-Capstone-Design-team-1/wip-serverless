@@ -10,101 +10,15 @@
 import validate from "./src/validation.js";
 import * as UnifiedSearchService from "./src/unified_search.js";
 import { verifyToken } from "./src/authentication.js";
-import { SEARCH_VERSION } from "./src/cursor.js";
+import {
+  getCacheKeyString,
+  createCacheKey,
+  findCachedData,
+  saveCacheData,
+  CACHE_MAX_AGE_SECONDS,
+} from "./src/cache.js";
 
 const DEFAULT_LIMIT = 30;
-const CACHE_MAX_AGE_SECONDS = 3600;
-
-/**
- * Cache Key 생성 함수
- * @param {Request} request
- * @param {string} canonicalQuery
- * @param {number} limit
- * @param {string|null} cursor
- * @returns {Request}
- */
-function createCacheKey(request, canonicalQuery, limit, cursor) {
-  const cacheUrl = new URL(request.url);
-
-  cacheUrl.pathname = "/_cache/unified_search";
-
-  const params = new URLSearchParams({
-    v: SEARCH_VERSION,
-    q: canonicalQuery,
-    limit: String(limit),
-    cursor: cursor || "",
-  });
-
-  cacheUrl.search = params.toString();
-
-  return new Request(cacheUrl.toString(), { method: "GET" });
-}
-
-/**
- * 캐시된 응답 조회
- * @param {Request} cacheKey
- * @returns {Promise<Response|null>}
- */
-async function findCachedResponse(cacheKey) {
-  const isCacheSupported =
-    typeof caches !== "undefined" && Boolean(caches.default);
-
-  if (!isCacheSupported) {
-    return null;
-  }
-
-  try {
-    const cache = caches.default;
-
-    const cachedResponse = await cache.match(cacheKey);
-
-    const hasCachedResponse = Boolean(cachedResponse);
-
-    if (hasCachedResponse) {
-      return cachedResponse;
-    }
-
-    return null;
-  } catch (error) {
-    console.error("Cache lookup error:", error);
-
-    return null;
-  }
-}
-
-/**
- * 응답을 캐시에 비동기로 저장
- * @param {Request} cacheKey
- * @param {Response} response
- * @param {Object} [ctx]
- * @returns {Promise<void>}
- */
-async function saveResponseToCache(cacheKey, response, ctx) {
-  const isCacheSupported =
-    typeof caches !== "undefined" && Boolean(caches.default);
-
-  if (!isCacheSupported) {
-    return;
-  }
-
-  try {
-    const cache = caches.default;
-
-    const responseToCache = response.clone();
-
-    const hasWaitUntil = ctx && typeof ctx.waitUntil === "function";
-
-    if (hasWaitUntil) {
-      ctx.waitUntil(cache.put(cacheKey, responseToCache));
-
-      return;
-    }
-
-    await cache.put(cacheKey, responseToCache);
-  } catch (error) {
-    console.error("Cache save error:", error);
-  }
-}
 
 /**
  * 요청 URL에서 limit 파싱
@@ -147,22 +61,35 @@ async function requestUnifiedSearch(request, env, ctx) {
     return new Response(validateResult.reason, { status: 400 });
   }
 
-  const cacheKey = createCacheKey(
+  const cacheKeyStr = getCacheKeyString(
+    validateResult.canonicalQuery,
+    limit,
+    cursor,
+  );
+
+  const cacheKeyRequest = createCacheKey(
     request,
     validateResult.canonicalQuery,
     limit,
     cursor,
   );
 
-  const cachedResponse = await findCachedResponse(cacheKey);
+  const { data: cachedData, source } = await findCachedData(
+    cacheKeyStr,
+    cacheKeyRequest,
+  );
 
-  const isCacheHit = Boolean(cachedResponse);
+  const isCacheHit = Boolean(cachedData);
 
   if (isCacheHit) {
-    const hitResponse = new Response(cachedResponse.body, cachedResponse);
-    hitResponse.headers.set("X-Cache-Status", "HIT");
-
-    return hitResponse;
+    return new Response(JSON.stringify(cachedData), {
+      status: 200,
+      headers: {
+        "Content-Type": "application/json",
+        "Cache-Control": `public, max-age=${CACHE_MAX_AGE_SECONDS}`,
+        "X-Cache-Status": `HIT (${source})`,
+      },
+    });
   }
 
   const db = env.D1;
@@ -183,7 +110,7 @@ async function requestUnifiedSearch(request, env, ctx) {
     },
   });
 
-  await saveResponseToCache(cacheKey, response, ctx);
+  await saveCacheData(cacheKeyStr, cacheKeyRequest, searchResult, ctx);
 
   return response;
 }
