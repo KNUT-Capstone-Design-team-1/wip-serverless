@@ -159,7 +159,10 @@ async function requestUnifiedSearch(request, env, ctx) {
   const isCacheHit = Boolean(cachedResponse);
 
   if (isCacheHit) {
-    return cachedResponse;
+    const hitResponse = new Response(cachedResponse.body, cachedResponse);
+    hitResponse.headers.set("X-Cache-Status", "HIT");
+
+    return hitResponse;
   }
 
   const db = env.D1;
@@ -176,6 +179,7 @@ async function requestUnifiedSearch(request, env, ctx) {
     headers: {
       "Content-Type": "application/json",
       "Cache-Control": `public, max-age=${CACHE_MAX_AGE_SECONDS}`,
+      "X-Cache-Status": "MISS",
     },
   });
 
