@@ -1,3 +1,5 @@
+import { TOKEN_EXPIRY_MS } from "./constants.js";
+
 const encoder = new TextEncoder();
 
 /**
@@ -51,7 +53,7 @@ export async function verifyToken(token, secret) {
     return false;
   }
 
-  const isExpiredToken = Date.now() - tokenTime > 10 * 60 * 1000;
+  const isExpiredToken = Date.now() - tokenTime > TOKEN_EXPIRY_MS;
   if (isExpiredToken) {
     return false;
   }

@@ -1,4 +1,5 @@
 import { encodeCursor } from "./cursor.js";
+import { DEFAULT_LIMIT } from "./constants.js";
 
 /**
  * FTS5 안전 토큰 이스케이프
@@ -142,13 +143,13 @@ function generateNextCursor(hasMore, items, canonicalQuery, limit) {
  * @param {Object} options 검색 옵션
  * @param {string[]} options.keywords 검색 키워드 목록
  * @param {string} options.canonicalQuery 정규화된 쿼리 문자열
- * @param {number} [options.limit=30] 최대 검색 결과 개수
+ * @param {number} [options.limit=300] 최대 검색 결과 개수
  * @param {{ score: number, rowid: number }|null} [options.cursorData=null] 커서 정보
  * @returns {Promise<{ results: string[], nextCursor: string|null, hasMore: boolean }>}
  */
 export async function searchUnified(
   db,
-  { keywords, canonicalQuery, limit = 30, cursorData = null },
+  { keywords, canonicalQuery, limit = DEFAULT_LIMIT, cursorData = null },
 ) {
   const matchQuery = buildMatchQuery(keywords);
 

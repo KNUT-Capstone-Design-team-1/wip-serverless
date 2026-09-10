@@ -1,18 +1,16 @@
 import wordData from "../words.js";
 import { decodeAndValidateCursor } from "./cursor.js";
+import {
+  MIN_LIMIT,
+  MIN_KEYWORDS_COUNT,
+  MAX_KEYWORDS_COUNT,
+  MAX_RAW_INPUT,
+  MAX_TOKENS,
+  MIN_ENG_TOKENS,
+} from "./constants.js";
 
 const STOP_WORDS = new Set(wordData.stoppedWords.map((w) => w.toLowerCase()));
 const BANNED_WORDS = new Set(wordData.bannedWords.map((w) => w.toLowerCase()));
-
-const MIN_LIMIT = 1;
-const MAX_LIMIT = 50;
-
-const MIN_KEYWORDS_COUNT = 1;
-const MAX_KEYWORDS_COUNT = 5;
-
-const MAX_RAW_INPUT = 50;
-const MAX_TOKENS = 5;
-const MIN_ENG_TOKENS = 3;
 
 /**
  * URI 컴포넌트 디코딩
@@ -133,12 +131,14 @@ function validateKeywordTokens(normalizedKeyword) {
  */
 function validate(keywords, limit, cursor = null) {
   const isInvalidLimit =
-    Number.isNaN(limit) || limit < MIN_LIMIT || limit > MAX_LIMIT;
+    typeof limit !== "number" ||
+    !Number.isInteger(limit) ||
+    limit < MIN_LIMIT;
 
   if (isInvalidLimit) {
     return {
       valid: false,
-      reason: "Invalid limit. It must be an integer between 1 and 50.",
+      reason: `Invalid limit. It must be an integer greater than or equal to ${MIN_LIMIT}.`,
     };
   }
 

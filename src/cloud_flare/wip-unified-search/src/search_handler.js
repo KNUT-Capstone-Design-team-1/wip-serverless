@@ -1,5 +1,6 @@
 import validate from "./validation.js";
 import * as UnifiedSearchService from "./unified_search.js";
+import { DEFAULT_LIMIT } from "./constants.js";
 import {
   getCacheKeyString,
   createCacheKey,
@@ -7,8 +8,6 @@ import {
   saveCacheData,
   CACHE_MAX_AGE_SECONDS,
 } from "./cache/index.js";
-
-const DEFAULT_LIMIT = 30;
 
 /**
  * 요청 URL에서 limit 파싱

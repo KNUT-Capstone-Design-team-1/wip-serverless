@@ -6,57 +6,63 @@ import { searchUnified } from "../src/unified_search.js";
 async function runTests() {
   console.log("=== 1. Test validation & canonicalQuery ===");
   {
-    const res = validate(["타이레놀"], 20);
+    const res = validate(["타이레놀"], 200);
     assert.strictEqual(res.valid, true);
     assert.deepStrictEqual(res.finalTokens, ["타이레놀"]);
     assert.strictEqual(res.canonicalQuery, "타이레놀");
   }
 
   {
-    const res = validate(["아세트아미노펜", "이부프로펜"], 10);
+    const res = validate(["아세트아미노펜", "이부프로펜"], 100);
     assert.strictEqual(res.valid, true);
     assert.deepStrictEqual(res.finalTokens, ["아세트아미노펜", "이부프로펜"]);
     assert.strictEqual(res.canonicalQuery, "아세트아미노펜 이부프로펜");
   }
 
   {
-    // invalid limit
+    // invalid limit under 100
     const res = validate(["아세트아미노펜"], 0);
     assert.strictEqual(res.valid, false);
   }
 
   {
-    // invalid limit over 50
-    const res = validate(["아세트아미노펜"], 51);
+    // invalid limit under 100 (99)
+    const res = validate(["아세트아미노펜"], 99);
     assert.strictEqual(res.valid, false);
+  }
+
+  {
+    // valid large limit (no upper bound)
+    const res = validate(["아세트아미노펜"], 1000);
+    assert.strictEqual(res.valid, true);
   }
 
   console.log("=== 2. Test cursor encode/decode & validation ===");
   {
     const cursor = encodeCursor({
       canonicalQuery: "아세트아미노펜",
-      limit: 20,
+      limit: 200,
       score: -2.345,
       rowid: 123,
     });
     assert.ok(typeof cursor === "string");
 
     // valid verification
-    const valRes = decodeAndValidateCursor(cursor, "아세트아미노펜", 20);
+    const valRes = decodeAndValidateCursor(cursor, "아세트아미노펜", 200);
     assert.strictEqual(valRes.valid, true);
     assert.strictEqual(valRes.data.score, -2.345);
     assert.strictEqual(valRes.data.rowid, 123);
 
     // query mismatch
-    const mismatchQuery = decodeAndValidateCursor(cursor, "다른검색어", 20);
+    const mismatchQuery = decodeAndValidateCursor(cursor, "다른검색어", 200);
     assert.strictEqual(mismatchQuery.valid, false);
 
     // limit mismatch
-    const mismatchLimit = decodeAndValidateCursor(cursor, "아세트아미노펜", 10);
+    const mismatchLimit = decodeAndValidateCursor(cursor, "아세트아미노펜", 100);
     assert.strictEqual(mismatchLimit.valid, false);
 
     // corrupted cursor
-    const corrupted = decodeAndValidateCursor("invalid_base64!!!", "아세트아미노펜", 20);
+    const corrupted = decodeAndValidateCursor("invalid_base64!!!", "아세트아미노펜", 200);
     assert.strictEqual(corrupted.valid, false);
   }
 
@@ -64,16 +70,16 @@ async function runTests() {
   {
     const cursor = encodeCursor({
       canonicalQuery: "아세트아미노펜",
-      limit: 20,
+      limit: 200,
       score: -1.5,
       rowid: 42,
     });
 
-    const res = validate(["아세트아미노펜"], 20, cursor);
+    const res = validate(["아세트아미노펜"], 200, cursor);
     assert.strictEqual(res.valid, true);
     assert.deepStrictEqual(res.cursorData, { score: -1.5, rowid: 42 });
 
-    const invalidRes = validate(["아세트아미노펜"], 20, "wrong_cursor");
+    const invalidRes = validate(["아세트아미노펜"], 200, "wrong_cursor");
     assert.strictEqual(invalidRes.valid, false);
   }
 
