@@ -1,5 +1,5 @@
 export const DEFAULT_LIMIT = 300;
-export const MIN_LIMIT = 100;
+export const MIN_LIMIT = 50;
 
 export const MIN_KEYWORDS_COUNT = 1;
 export const MAX_KEYWORDS_COUNT = 5;
