@@ -9,6 +9,7 @@ const cannabisSchema = require("./schemas/cannabis.json");
 const narcoticsSchema = require("./schemas/narcotics.json");
 const psychotropicsSchema = require("./schemas/psychotropics.json");
 const prohibitedListSchema = require("./schemas/prohibited_list.json");
+const functionalFoodNutrientsSchema = require("./schemas/functional_food_nutrients.json");
 
 const app = express();
 
@@ -45,6 +46,9 @@ function getTableSchema(table) {
 
     case "prohibited_list":
       return { success: true, columns: prohibitedListSchema.columns };
+
+    case "functional_food_nutrients":
+      return { success: true, columns: functionalFoodNutrientsSchema.columns };
 
     default:
       return { success: false, message: "Invalid Table Name" };

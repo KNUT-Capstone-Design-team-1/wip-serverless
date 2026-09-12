@@ -26,5 +26,9 @@
   "prohibited_list": {
     "schemaVersion": 20260530,
     "dataVersion": 20260810
+  },
+  "functional_food_nutrients": {
+    "schemaVersion": 20260912,
+    "dataVersion": 20260912
   }
 }
