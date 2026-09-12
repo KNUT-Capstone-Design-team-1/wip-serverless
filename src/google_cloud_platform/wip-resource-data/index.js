@@ -5,7 +5,11 @@ const { Storage } = require("@google-cloud/storage");
 const { authenticate } = require("./authentication");
 
 const BUCKET_NAME = "wip-bucket";
-const PAGE_LIMIT = 2500;
+const DEFAULT_PAGE_LIMIT = 5000;
+
+// 전역 Storage 인스턴스 및 인메모리 캐시 재사용
+const storage = new Storage();
+const resourceCache = new Map();
 
 const app = express();
 
@@ -16,20 +20,24 @@ app.use(
 );
 
 /**
- * 테이블 별 원천 데이터 반환
+ * 테이블 별 원천 데이터 반환 (인메모리 캐싱 적용)
  * @param {String} table
  * @returns
  */
 async function getResourcesByTable(table) {
   try {
-    const filePath = `${table}.json`;
+    if (resourceCache.has(table)) {
+      return { success: true, resources: resourceCache.get(table) };
+    }
 
-    const storage = new Storage();
+    const filePath = `${table}.json`;
     const file = storage.bucket(BUCKET_NAME).file(filePath);
 
     const [contents] = await file.download(); // 파일 전체를 메모리로 읽기
-
     const { resources } = JSON.parse(contents.toString("utf-8"));
+
+    // 파싱된 데이터 메모리 캐시 저장
+    resourceCache.set(table, resources);
 
     return { success: true, resources };
   } catch (e) {
@@ -40,10 +48,12 @@ async function getResourcesByTable(table) {
 
 /**
  * 원천 데이터를 페이징하여 반환
- * @param {String} 테이블 이름
- * @returns {Number} 페이지
+ * @param {String} table 테이블 이름
+ * @param {Number|String} page 페이지
+ * @param {Number|String} limit 페이징 단위
+ * @returns
  */
-async function getResources(table, page) {
+async function getResources(table, page, limit = DEFAULT_PAGE_LIMIT) {
   const tableResourceGetResult = await getResourcesByTable(table);
 
   if (!tableResourceGetResult.success) {
@@ -52,11 +62,14 @@ async function getResources(table, page) {
 
   const { resources } = tableResourceGetResult;
 
-  const total = resources.length;
-  const totalPage = Math.ceil(total / PAGE_LIMIT);
-  const current = (Number(page) - 1) * PAGE_LIMIT;
+  const pageSize = Math.max(1, Number(limit) || DEFAULT_PAGE_LIMIT);
+  const pageNumber = Math.max(1, Number(page) || 1);
 
-  const resource = resources.slice(current, current + PAGE_LIMIT);
+  const total = resources.length;
+  const totalPage = Math.ceil(total / pageSize);
+  const current = (pageNumber - 1) * pageSize;
+
+  const resource = resources.slice(current, current + pageSize);
 
   return { success: true, data: { resource, total, totalPage, current } };
 }
@@ -72,9 +85,9 @@ app.get("/", async (req, res) => {
     return;
   }
 
-  const { table, page } = req.query;
+  const { table, page, limit } = req.query;
 
-  const result = await getResources(table, page);
+  const result = await getResources(table, page, limit);
 
   if (!result.success) {
     res.status(500).send(result.message);
