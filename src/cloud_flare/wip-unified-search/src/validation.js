@@ -7,6 +7,7 @@ import {
   MAX_RAW_INPUT,
   MAX_TOKENS,
   MIN_ENG_TOKENS,
+  VALID_CHARACTERS_REGEX,
 } from "./constants.js";
 
 const STOP_WORDS = new Set(wordData.stoppedWords.map((w) => w.toLowerCase()));
@@ -18,10 +19,14 @@ const BANNED_WORDS = new Set(wordData.bannedWords.map((w) => w.toLowerCase()));
  * @returns {string|null}
  */
 function getDecodedURIComponent(keyword) {
+  if (typeof keyword !== "string") {
+    return null;
+  }
+
   try {
     return decodeURIComponent(keyword);
   } catch {
-    return null;
+    return keyword;
   }
 }
 
@@ -31,83 +36,48 @@ function getDecodedURIComponent(keyword) {
  * @returns {{ valid: boolean, reason?: string, tokens?: string[] }}
  */
 function validateKeywordTokens(normalizedKeyword) {
-  const isNotString = typeof normalizedKeyword !== "string";
-
-  if (isNotString) {
-    return { valid: false, reason: "문자열만 허용됩니다." };
-  }
-
-  const isEmpty = normalizedKeyword.length === 0;
-
-  if (isEmpty) {
+  if (!normalizedKeyword || normalizedKeyword.length === 0) {
     return { valid: false, reason: "값이 비어 있습니다." };
   }
 
-  const hasEdgeSpaces = normalizedKeyword !== normalizedKeyword.trim();
-
-  if (hasEdgeSpaces) {
-    return { valid: false, reason: "앞뒤 공백은 허용되지 않습니다." };
-  }
-
-  const hasConsecutiveSpaces = /\s{2,}/.test(normalizedKeyword);
-
-  if (hasConsecutiveSpaces) {
-    return { valid: false, reason: "연속 공백은 허용되지 않습니다." };
-  }
-
-  const hasInvalidCharacters = !/^[A-Za-z가-힣\s]+$/.test(normalizedKeyword);
-
-  if (hasInvalidCharacters) {
-    return { valid: false, reason: "한글과 영어만 입력 가능합니다." };
-  }
-
-  const isExceedingMaxLength = normalizedKeyword.length > MAX_RAW_INPUT;
-
-  if (isExceedingMaxLength) {
+  if (normalizedKeyword.length > MAX_RAW_INPUT) {
     return {
       valid: false,
       reason: `검색어는 ${MAX_RAW_INPUT}자 이하로 입력해주세요.`,
     };
   }
 
+  if (!VALID_CHARACTERS_REGEX.test(normalizedKeyword)) {
+    return {
+      valid: false,
+      reason: "허용되지 않는 특수문자가 포함되어 있습니다.",
+    };
+  }
+
   const tokens = normalizedKeyword
     .split(/\s+/)
-    .filter((t) => !STOP_WORDS.has(t));
+    .filter((t) => t.length > 0 && !STOP_WORDS.has(t));
 
-  const hasNoMeaningfulTokens = tokens.length === 0;
-
-  if (hasNoMeaningfulTokens) {
+  if (tokens.length === 0) {
     return { valid: false, reason: "의미 있는 검색어를 입력해주세요." };
   }
 
-  const isExceedingTokenLimit = tokens.length > MAX_TOKENS;
-
-  if (isExceedingTokenLimit) {
+  if (tokens.length > MAX_TOKENS) {
     return {
       valid: false,
       reason: `검색어는 최대 ${MAX_TOKENS}개 단어까지 입력 가능합니다.`,
     };
   }
 
-  const hasDuplicateTokens = new Set(tokens).size !== tokens.length;
-
-  if (hasDuplicateTokens) {
+  if (new Set(tokens).size !== tokens.length) {
     return { valid: false, reason: "동일 단어를 반복할 수 없습니다." };
   }
 
-  const isAllBannedWords = tokens.every((t) => BANNED_WORDS.has(t));
-
-  if (isAllBannedWords) {
+  if (tokens.every((t) => BANNED_WORDS.has(t))) {
     return { valid: false, reason: "너무 일반적인 검색어입니다." };
   }
 
   for (const token of tokens) {
-    const isRepeatedChar = /^(.)\1+$/.test(token);
-
-    if (isRepeatedChar) {
-      return { valid: false, reason: "의미 있는 검색어를 입력해주세요." };
-    }
-
     const isShortEnglishToken =
       /^[a-z]+$/.test(token) && token.length < MIN_ENG_TOKENS;
 
@@ -142,7 +112,8 @@ function validate(keywords, limit, cursor = null) {
     };
   }
 
-  const hasNoKeywords = !keywords || keywords.length < MIN_KEYWORDS_COUNT;
+  const hasNoKeywords =
+    !Array.isArray(keywords) || keywords.length < MIN_KEYWORDS_COUNT;
 
   if (hasNoKeywords) {
     return { valid: false, reason: "검색어는 최소 1개 이상 필요합니다." };
@@ -157,23 +128,17 @@ function validate(keywords, limit, cursor = null) {
     };
   }
 
-  const decodedKeywords = [];
+  const normalizedKeywords = [];
 
   for (const keyword of keywords) {
     const decoded = getDecodedURIComponent(keyword);
 
-    const isInvalidEncoding = decoded === null;
-
-    if (isInvalidEncoding) {
+    if (decoded === null) {
       return { valid: false, reason: "잘못된 인코딩입니다." };
     }
 
-    decodedKeywords.push(decoded);
+    normalizedKeywords.push(decoded.normalize("NFC").trim().toLowerCase());
   }
-
-  const normalizedKeywords = decodedKeywords.map((k) =>
-    k.normalize("NFC").trim().toLowerCase(),
-  );
 
   const hasDuplicateKeywords =
     new Set(normalizedKeywords).size !== normalizedKeywords.length;

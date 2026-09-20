@@ -20,14 +20,14 @@ async function runTests() {
   }
 
   {
-    // invalid limit under 100
+    // invalid limit under MIN_LIMIT (50)
     const res = validate(["아세트아미노펜"], 0);
     assert.strictEqual(res.valid, false);
   }
 
   {
-    // invalid limit under 100 (99)
-    const res = validate(["아세트아미노펜"], 99);
+    // invalid limit under MIN_LIMIT (50)
+    const res = validate(["아세트아미노펜"], 49);
     assert.strictEqual(res.valid, false);
   }
 
@@ -35,6 +35,62 @@ async function runTests() {
     // valid large limit (no upper bound)
     const res = validate(["아세트아미노펜"], 1000);
     assert.strictEqual(res.valid, true);
+  }
+
+  {
+    // User requested test cases
+    // 1. 숫자 포함 검색어
+    const res1 = validate(["타이레놀 500"], 100);
+    assert.strictEqual(res1.valid, true);
+    assert.deepStrictEqual(res1.finalTokens, ["타이레놀", "500"]);
+
+    const res2 = validate(["게보린 10정"], 100);
+    assert.strictEqual(res2.valid, true);
+    assert.deepStrictEqual(res2.finalTokens, ["게보린", "10정"]);
+
+    const res3 = validate(["100mg"], 100);
+    assert.strictEqual(res3.valid, true);
+    assert.deepStrictEqual(res3.finalTokens, ["100mg"]);
+
+    // 2. 특수문자 포함 검색어 (허용: {} () [] <> \ / - _ % . ,)
+    const res4 = validate(["타이레놀(이알)"], 100);
+    assert.strictEqual(res4.valid, true);
+    assert.deepStrictEqual(res4.finalTokens, ["타이레놀(이알)"]);
+
+    const res5 = validate(["판콜-에스"], 100);
+    assert.strictEqual(res5.valid, true);
+    assert.deepStrictEqual(res5.finalTokens, ["판콜-에스"]);
+
+    const resSpecial = validate(["{A} [B] <C> D/E\\F_G 5.0%"], 100);
+    assert.strictEqual(resSpecial.valid, true);
+    assert.deepStrictEqual(resSpecial.finalTokens, [
+      "{a}",
+      "[b]",
+      "<c>",
+      "d/e\\f_g",
+      "5.0%",
+    ]);
+
+    const resComma = validate(["1,000mg"], 100);
+    assert.strictEqual(resComma.valid, true);
+    assert.deepStrictEqual(resComma.finalTokens, ["1,000mg"]);
+
+    // 허용되지 않은 특수문자 (!, @, #, $, ?, *)
+    const resDisallowed = validate(["타이레놀!"], 100);
+    assert.strictEqual(resDisallowed.valid, false);
+
+    // 3. 1~2글자 영문 검색어
+    const res6 = validate(["비타민 C"], 100);
+    assert.strictEqual(res6.valid, true);
+    assert.deepStrictEqual(res6.finalTokens, ["비타민", "c"]);
+
+    const res7 = validate(["비타민 D3"], 100);
+    assert.strictEqual(res7.valid, true);
+    assert.deepStrictEqual(res7.finalTokens, ["비타민", "d3"]);
+
+    const res8 = validate(["Mg"], 100);
+    assert.strictEqual(res8.valid, true);
+    assert.deepStrictEqual(res8.finalTokens, ["mg"]);
   }
 
   console.log("=== 2. Test cursor encode/decode & validation ===");
