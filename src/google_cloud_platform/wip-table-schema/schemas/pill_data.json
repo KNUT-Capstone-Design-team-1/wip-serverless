@@ -155,34 +155,6 @@
       "isPK": false
     },
     {
-      "name": "DRUG_SHAPE_FRONT",
-      "type": "TEXT",
-      "nullable": true,
-      "defaultValue": "",
-      "isPK": false
-    },
-    {
-      "name": "DRUG_SHAPE_BACK",
-      "type": "TEXT",
-      "nullable": true,
-      "defaultValue": "",
-      "isPK": false
-    },
-    {
-      "name": "MARK_IMAGE_FRONT",
-      "type": "TEXT",
-      "nullable": true,
-      "defaultValue": "",
-      "isPK": false
-    },
-    {
-      "name": "MARK_IMAGE_BACK",
-      "type": "TEXT",
-      "nullable": true,
-      "defaultValue": "",
-      "isPK": false
-    },
-    {
       "name": "MARK_CODE_FRONT",
       "type": "TEXT",
       "nullable": true,
@@ -260,21 +232,7 @@
       "isPK": false
     },
     {
-      "name": "FINISH_MATERIAL_YN",
-      "type": "TEXT",
-      "nullable": true,
-      "defaultValue": "",
-      "isPK": false
-    },
-    {
       "name": "NEW_DRUG_YN",
-      "type": "TEXT",
-      "nullable": true,
-      "defaultValue": "",
-      "isPK": false
-    },
-    {
-      "name": "INDUTY_CODE",
       "type": "TEXT",
       "nullable": true,
       "defaultValue": "",
