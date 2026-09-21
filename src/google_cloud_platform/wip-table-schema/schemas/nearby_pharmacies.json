@@ -29,6 +29,20 @@
       "isPK": false
     },
     {
+      "name": "openTime",
+      "type": "TEXT",
+      "nullable": true,
+      "defaultValue": "",
+      "isPK": false
+    },
+    {
+      "name": "closeTime",
+      "type": "TEXT",
+      "nullable": true,
+      "defaultValue": "",
+      "isPK": false
+    },
+    {
       "name": "X",
       "type": "DOUBLE",
       "nullable": true,
