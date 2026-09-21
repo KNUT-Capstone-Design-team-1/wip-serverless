@@ -15,34 +15,6 @@
       "isPK": false
     },
     {
-      "name": "states",
-      "type": "TEXT",
-      "nullable": true,
-      "defaultValue": "",
-      "isPK": false
-    },
-    {
-      "name": "region",
-      "type": "TEXT",
-      "nullable": true,
-      "defaultValue": "",
-      "isPK": false
-    },
-    {
-      "name": "district",
-      "type": "TEXT",
-      "nullable": true,
-      "defaultValue": "",
-      "isPK": false
-    },
-    {
-      "name": "postalCode",
-      "type": "TEXT",
-      "nullable": true,
-      "defaultValue": "",
-      "isPK": false
-    },
-    {
       "name": "address",
       "type": "TEXT",
       "nullable": true,
@@ -52,13 +24,6 @@
     {
       "name": "telephone",
       "type": "TEXT",
-      "nullable": true,
-      "defaultValue": "",
-      "isPK": false
-    },
-    {
-      "name": "openData",
-      "type": "INTEGER",
       "nullable": true,
       "defaultValue": "",
       "isPK": false
