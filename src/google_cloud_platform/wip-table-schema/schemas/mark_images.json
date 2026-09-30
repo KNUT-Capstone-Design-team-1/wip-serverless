@@ -16,7 +16,7 @@
     },
     {
       "name": "base64",
-      "type": "BLOB",
+      "type": "TEXT",
       "size": null,
       "nullable": true,
       "defaultValue": "",
