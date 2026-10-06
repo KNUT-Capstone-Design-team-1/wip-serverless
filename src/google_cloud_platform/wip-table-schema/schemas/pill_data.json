@@ -286,6 +286,13 @@
       "nullable": true,
       "defaultValue": "",
       "isPK": false
+    },
+    {
+      "name": "EFFECT_SUMMARY",
+      "type": "TEXT",
+      "nullable": true,
+      "defaultValue": "",
+      "isPK": false
     }
   ]
 }
