@@ -1,7 +1,7 @@
 {
   "pill_data": {
-    "schemaVersion": 20261006,
-    "dataVersion": 20261006
+    "schemaVersion": 20261011,
+    "dataVersion": 20261011
   },
   "mark_images": {
     "schemaVersion": 20260530,
@@ -9,7 +9,7 @@
   },
   "nearby_pharmacies": {
     "schemaVersion": 20260921,
-    "dataVersion": 20260921
+    "dataVersion": 20261011
   },
   "cannabis": {
     "schemaVersion": 20260530,
