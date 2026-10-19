@@ -13,19 +13,19 @@
   },
   "cannabis": {
     "schemaVersion": 20260530,
-    "dataVersion": 20260810
+    "dataVersion": 20261019
   },
   "narcotics": {
     "schemaVersion": 20260530,
-    "dataVersion": 20260810
+    "dataVersion": 20261019
   },
   "psychotropics": {
     "schemaVersion": 20260530,
-    "dataVersion": 20260810
+    "dataVersion": 20261019
   },
   "prohibited_list": {
     "schemaVersion": 20260530,
-    "dataVersion": 20260810
+    "dataVersion": 20261019
   },
   "functional_food_nutrients": {
     "schemaVersion": 20260912,
