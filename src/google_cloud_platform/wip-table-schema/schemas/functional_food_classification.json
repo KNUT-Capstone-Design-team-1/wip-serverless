@@ -1,0 +1,81 @@
+{
+  "columns": [
+    {
+      "name": "id",
+      "type": "TEXT",
+      "nullable": false,
+      "defaultValue": "",
+      "isPK": true
+    },
+    {
+      "name": "PRDCT_NM",
+      "type": "TEXT",
+      "nullable": true,
+      "defaultValue": "",
+      "isPK": false
+    },
+    {
+      "name": "IFTKN_ATNT_MATR_CN",
+      "type": "TEXT",
+      "nullable": true,
+      "defaultValue": "",
+      "isPK": false
+    },
+    {
+      "name": "PRIMARY_FNCLTY",
+      "type": "TEXT",
+      "nullable": true,
+      "defaultValue": "",
+      "isPK": false
+    },
+    {
+      "name": "DAY_INTK_LOWLIMIT",
+      "type": "TEXT",
+      "nullable": true,
+      "defaultValue": "",
+      "isPK": false
+    },
+    {
+      "name": "DAY_INTK_HIGHLIMIT",
+      "type": "TEXT",
+      "nullable": true,
+      "defaultValue": "",
+      "isPK": false
+    },
+    {
+      "name": "INTK_UNIT",
+      "type": "TEXT",
+      "nullable": true,
+      "defaultValue": "",
+      "isPK": false
+    },
+    {
+      "name": "INTK_MEMO",
+      "type": "TEXT",
+      "nullable": true,
+      "defaultValue": "",
+      "isPK": false
+    },
+    {
+      "name": "SKLL_IX_IRDNT_RAWMTRL",
+      "type": "TEXT",
+      "nullable": true,
+      "defaultValue": "",
+      "isPK": false
+    },
+    {
+      "name": "CRET_DTM",
+      "type": "TEXT",
+      "nullable": true,
+      "defaultValue": "",
+      "isPK": false
+    },
+    {
+      "name": "LAST_UPDT_DTM",
+      "type": "TEXT",
+      "nullable": true,
+      "defaultValue": "",
+      "isPK": false
+    }
+  ]
+}

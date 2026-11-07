@@ -10,6 +10,8 @@ const narcoticsSchema = require("./schemas/narcotics.json");
 const psychotropicsSchema = require("./schemas/psychotropics.json");
 const prohibitedListSchema = require("./schemas/prohibited_list.json");
 const functionalFoodNutrientsSchema = require("./schemas/functional_food_nutrients.json");
+const functionalFoodClassificationSchema = require("./schemas/functional_food_classification.json");
+const healthFunctionalFoodRawMaterialSchema = require("./schemas/health_functional_food_raw_material.json");
 
 const app = express();
 
@@ -49,6 +51,18 @@ function getTableSchema(table) {
 
     case "functional_food_nutrients":
       return { success: true, columns: functionalFoodNutrientsSchema.columns };
+
+    case "functional_food_classification":
+      return {
+        success: true,
+        columns: functionalFoodClassificationSchema.columns,
+      };
+
+    case "health_functional_food_raw_material":
+      return {
+        success: true,
+        columns: healthFunctionalFoodRawMaterialSchema.columns,
+      };
 
     default:
       return { success: false, message: "Invalid Table Name" };

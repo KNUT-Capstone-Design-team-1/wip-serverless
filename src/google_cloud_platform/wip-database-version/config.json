@@ -30,5 +30,13 @@
   "functional_food_nutrients": {
     "schemaVersion": 20260912,
     "dataVersion": 20261102
+  },
+  "functional_food_classification": {
+    "schemaVersion": 20261107,
+    "dataVersion": 20261107
+  },
+  "health_functional_food_raw_material": {
+    "schemaVersion": 20261107,
+    "dataVersion": 20261107
   }
 }

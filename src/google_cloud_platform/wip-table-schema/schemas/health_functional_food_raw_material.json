@@ -1,0 +1,130 @@
+{
+  "columns": [
+    {
+      "name": "LCNS_NO",
+      "type": "TEXT",
+      "nullable": true,
+      "defaultValue": "",
+      "isPK": false
+    },
+    {
+      "name": "BSSH_NM",
+      "type": "TEXT",
+      "nullable": true,
+      "defaultValue": "",
+      "isPK": false
+    },
+    {
+      "name": "PRDLST_REPORT_NO",
+      "type": "TEXT",
+      "nullable": false,
+      "defaultValue": "",
+      "isPK": true
+    },
+    {
+      "name": "PRDLST_NM",
+      "type": "TEXT",
+      "nullable": true,
+      "defaultValue": "",
+      "isPK": false
+    },
+    {
+      "name": "PRMS_DT",
+      "type": "TEXT",
+      "nullable": true,
+      "defaultValue": "",
+      "isPK": false
+    },
+    {
+      "name": "POG_DAYCNT",
+      "type": "TEXT",
+      "nullable": true,
+      "defaultValue": "",
+      "isPK": false
+    },
+    {
+      "name": "DISPOS",
+      "type": "TEXT",
+      "nullable": true,
+      "defaultValue": "",
+      "isPK": false
+    },
+    {
+      "name": "NTK_MTHD",
+      "type": "TEXT",
+      "nullable": true,
+      "defaultValue": "",
+      "isPK": false
+    },
+    {
+      "name": "PRIMARY_FNCLTY",
+      "type": "TEXT",
+      "nullable": true,
+      "defaultValue": "",
+      "isPK": false
+    },
+    {
+      "name": "IFTKN_ATNT_MATR_CN",
+      "type": "TEXT",
+      "nullable": true,
+      "defaultValue": "",
+      "isPK": false
+    },
+    {
+      "name": "CSTDY_MTHD",
+      "type": "TEXT",
+      "nullable": true,
+      "defaultValue": "",
+      "isPK": false
+    },
+    {
+      "name": "SHAP",
+      "type": "TEXT",
+      "nullable": true,
+      "defaultValue": "",
+      "isPK": false
+    },
+    {
+      "name": "STDR_STND",
+      "type": "TEXT",
+      "nullable": true,
+      "defaultValue": "",
+      "isPK": false
+    },
+    {
+      "name": "RAWMTRL_NM",
+      "type": "TEXT",
+      "nullable": true,
+      "defaultValue": "",
+      "isPK": false
+    },
+    {
+      "name": "CRET_DTM",
+      "type": "TEXT",
+      "nullable": true,
+      "defaultValue": "",
+      "isPK": false
+    },
+    {
+      "name": "LAST_UPDT_DTM",
+      "type": "TEXT",
+      "nullable": true,
+      "defaultValue": "",
+      "isPK": false
+    },
+    {
+      "name": "PRDT_SHAP_CD_NM",
+      "type": "TEXT",
+      "nullable": true,
+      "defaultValue": "",
+      "isPK": false
+    },
+    {
+      "name": "CLASSIFICATION_IDS",
+      "type": "TEXT",
+      "nullable": true,
+      "defaultValue": "[]",
+      "isPK": false
+    }
+  ]
+}
