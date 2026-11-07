@@ -293,6 +293,13 @@
       "nullable": true,
       "defaultValue": "",
       "isPK": false
+    },
+    {
+      "name": "EFFECT_KEYWORD",
+      "type": "TEXT",
+      "nullable": true,
+      "defaultValue": "",
+      "isPK": false
     }
   ]
 }
