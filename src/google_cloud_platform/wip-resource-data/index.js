@@ -5,7 +5,8 @@ const { authenticate } = require("./authentication");
 const { createResourceStore } = require("./resources");
 const { sendJsonResponse } = require("./response");
 
-const store = createResourceStore(new Storage());
+// Pin one immutable manifest per deployment, rather than a mutable "latest" file.
+const store = createResourceStore(new Storage(), { manifestPath: process.env.RESOURCE_DATA_MANIFEST });
 const app = express();
 
 app.get("/", async (req, res, next) => {
