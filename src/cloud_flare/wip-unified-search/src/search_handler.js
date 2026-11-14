@@ -3,11 +3,10 @@ import * as UnifiedSearchService from "./unified_search.js";
 import { DEFAULT_LIMIT } from "./constants.js";
 import {
   getCacheKeyString,
-  createCacheKey,
   findCachedData,
   saveCacheData,
-  CACHE_MAX_AGE_SECONDS,
-} from "./cache/index.js";
+  RESPONSE_CACHE_MAX_AGE_SECONDS,
+} from "./cache.js";
 
 /**
  * 요청 URL에서 limit 파싱
@@ -54,16 +53,8 @@ export async function handleSearchRequest(request, env, ctx) {
     cursor,
   );
 
-  const cacheKeyRequest = createCacheKey(
-    request,
-    validateResult.canonicalQuery,
-    limit,
-    cursor,
-  );
-
   const { data: cachedData, source } = await findCachedData(
     cacheKeyStr,
-    cacheKeyRequest,
     env,
   );
 
@@ -74,7 +65,7 @@ export async function handleSearchRequest(request, env, ctx) {
       status: 200,
       headers: {
         "Content-Type": "application/json",
-        "Cache-Control": `public, max-age=${CACHE_MAX_AGE_SECONDS}`,
+        "Cache-Control": `public, max-age=${RESPONSE_CACHE_MAX_AGE_SECONDS}`,
         "X-Cache-Status": `HIT (${source})`,
       },
     });
@@ -93,12 +84,12 @@ export async function handleSearchRequest(request, env, ctx) {
     status: 200,
     headers: {
       "Content-Type": "application/json",
-      "Cache-Control": `public, max-age=${CACHE_MAX_AGE_SECONDS}`,
+      "Cache-Control": `public, max-age=${RESPONSE_CACHE_MAX_AGE_SECONDS}`,
       "X-Cache-Status": "MISS",
     },
   });
 
-  await saveCacheData(cacheKeyStr, cacheKeyRequest, searchResult, env, ctx);
+  await saveCacheData(cacheKeyStr, searchResult, env, ctx);
 
   return response;
 }
