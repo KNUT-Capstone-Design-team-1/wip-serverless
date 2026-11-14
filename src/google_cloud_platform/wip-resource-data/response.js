@@ -56,7 +56,7 @@ async function sendJsonResponse(req, res, response) {
   let encoding = req.acceptsEncodings(...response.availableEncodings);
   res.vary("Accept-Encoding");
   if (!encoding) return res.sendStatus(406);
-  res.status(200).type("json").set("ETag", response.etag).set("Cache-Control", "private, no-cache");
+  res.status(200).type("json").set("ETag", response.etag);
   if (req.fresh) return res.status(304).end();
 
   let body = await response.getEncoded(encoding);
