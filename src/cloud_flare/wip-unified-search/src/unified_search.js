@@ -1,6 +1,9 @@
 import { encodeCursor } from "./cursor.js";
 import { DEFAULT_LIMIT } from "./constants.js";
 
+// NAME, INGREDIENT, INDICATION, APPEARANCE, COMPANY (deployer v2 core FTS).
+const RANK_FUNCTION = "bm25(8.0, 5.0, 10.0, 2.0, 1.0)";
+
 /**
  * FTS5 안전 토큰 이스케이프
  * @param {string} token 토큰
@@ -50,22 +53,23 @@ function buildSearchQueryAndParams(matchQuery, fetchLimit, cursorData) {
   if (hasCursor) {
     const sqlWithCursor = `
       SELECT
-        unified_search.ITEM_SEQ,
+        unified_search_v2.ITEM_SEQ,
         matched.score,
         matched.row_id
       FROM (
         SELECT
-          unified_search_fts.rowid AS row_id,
+          unified_search_fts_v2.rowid AS row_id,
           rank AS score
-        FROM unified_search_fts
-        WHERE unified_search_fts MATCH ?
-          AND (rank, unified_search_fts.rowid) > (?, ?)
+        FROM unified_search_fts_v2
+        WHERE unified_search_fts_v2 MATCH ?
+          AND rank MATCH '${RANK_FUNCTION}'
+          AND (rank, unified_search_fts_v2.rowid) > (?, ?)
         ORDER BY
           rank ASC,
-          unified_search_fts.rowid ASC
+          unified_search_fts_v2.rowid ASC
         LIMIT ?
       ) AS matched
-      JOIN unified_search ON unified_search.rowid = matched.row_id
+      JOIN unified_search_v2 ON unified_search_v2.rowid = matched.row_id
       ORDER BY
         matched.score ASC,
         matched.row_id ASC;
@@ -83,21 +87,22 @@ function buildSearchQueryAndParams(matchQuery, fetchLimit, cursorData) {
 
   const sqlWithoutCursor = `
     SELECT
-      unified_search.ITEM_SEQ,
+      unified_search_v2.ITEM_SEQ,
       matched.score,
       matched.row_id
     FROM (
       SELECT
-        unified_search_fts.rowid AS row_id,
+        unified_search_fts_v2.rowid AS row_id,
         rank AS score
-      FROM unified_search_fts
-      WHERE unified_search_fts MATCH ?
+      FROM unified_search_fts_v2
+      WHERE unified_search_fts_v2 MATCH ?
+        AND rank MATCH '${RANK_FUNCTION}'
       ORDER BY
         rank ASC,
-        unified_search_fts.rowid ASC
+        unified_search_fts_v2.rowid ASC
       LIMIT ?
     ) AS matched
-    JOIN unified_search ON unified_search.rowid = matched.row_id
+    JOIN unified_search_v2 ON unified_search_v2.rowid = matched.row_id
     ORDER BY
       matched.score ASC,
       matched.row_id ASC;

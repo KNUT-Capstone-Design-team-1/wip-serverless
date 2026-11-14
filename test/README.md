@@ -10,6 +10,18 @@ node --experimental-default-type=module --test test/cloudflare_auth.test.mjs src
 두 번째 명령은 `node:sqlite`와 FTS5를 제공하는 Node.js에서 실행합니다.
 실제 D1/GCS/Gemini/API의 지연 시간과 배포 환경에서의 HTTP 전송은 별도 확인이 필요합니다.
 
+통합 검색 v2의 deployer SQL·문서 실패·재시도 검증은 다음으로 실행합니다.
+읽기 전용 `C:/project/wip-resource-deployer`에 설치된 TypeScript를 사용합니다.
+다른 위치에서는 `WIP_DEPLOYER_ROOT`를 설정합니다.
+
+```sh
+node changes/validate-search-v2.cjs
+node --test test/search_v2_deployer.test.cjs
+```
+
+새 Worker 배포 전에 [검색 v2 적용 가이드](../changes/SEARCH_V2_GUIDE.md)의
+deployer 패치 적용, 스키마 생성, 백필, 검증을 먼저 완료해야 합니다.
+
 ## 적용 동작
 
 - `wip-pill-detail`: 성공 응답을 품목 코드별로 최대 1일 저장합니다. 장애 안내

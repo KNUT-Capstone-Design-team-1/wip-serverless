@@ -1,4 +1,4 @@
-export const SEARCH_VERSION = "v4";
+export const SEARCH_VERSION = "v5";
 
 /**
  * UTF-8 문자열을 Base64로 인코딩
