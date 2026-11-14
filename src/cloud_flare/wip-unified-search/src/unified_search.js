@@ -119,9 +119,16 @@ function buildSearchQueryAndParams(matchQuery, fetchLimit, cursorData) {
  * @param {Array<Object>} items
  * @param {string} canonicalQuery
  * @param {number} limit
+ * @param {string} dataVersion
  * @returns {string|null}
  */
-function generateNextCursor(hasMore, items, canonicalQuery, limit) {
+function generateNextCursor(
+  hasMore,
+  items,
+  canonicalQuery,
+  limit,
+  dataVersion,
+) {
   const canGenerateCursor = hasMore && items.length > 0;
 
   if (!canGenerateCursor) {
@@ -135,6 +142,7 @@ function generateNextCursor(hasMore, items, canonicalQuery, limit) {
     limit,
     score: lastItem.score,
     rowid: lastItem.row_id,
+    dataVersion,
   });
 }
 
@@ -146,11 +154,18 @@ function generateNextCursor(hasMore, items, canonicalQuery, limit) {
  * @param {string} options.canonicalQuery 정규화된 쿼리 문자열
  * @param {number} [options.limit=300] 최대 검색 결과 개수
  * @param {{ score: number, rowid: number }|null} [options.cursorData=null] 커서 정보
+ * @param {string} [options.dataVersion="default"] 검색 데이터 버전
  * @returns {Promise<{ results: string[], nextCursor: string|null, hasMore: boolean }>}
  */
 export async function searchUnified(
   db,
-  { keywords, canonicalQuery, limit = DEFAULT_LIMIT, cursorData = null },
+  {
+    keywords,
+    canonicalQuery,
+    limit = DEFAULT_LIMIT,
+    cursorData = null,
+    dataVersion = "default",
+  },
 ) {
   const matchQuery = buildMatchQuery(keywords);
 
@@ -168,7 +183,10 @@ export async function searchUnified(
     cursorData,
   );
 
-  const queryResult = await db.prepare(sql).bind(...params).all();
+  const queryResult = await db
+    .prepare(sql)
+    .bind(...params)
+    .all();
 
   const rawRows = queryResult.results || [];
 
@@ -176,7 +194,13 @@ export async function searchUnified(
 
   const items = hasMore ? rawRows.slice(0, limit) : rawRows;
 
-  const nextCursor = generateNextCursor(hasMore, items, canonicalQuery, limit);
+  const nextCursor = generateNextCursor(
+    hasMore,
+    items,
+    canonicalQuery,
+    limit,
+    dataVersion,
+  );
 
   const itemSeqs = items.map((row) => row.ITEM_SEQ);
 
@@ -186,4 +210,3 @@ export async function searchUnified(
     hasMore,
   };
 }
-

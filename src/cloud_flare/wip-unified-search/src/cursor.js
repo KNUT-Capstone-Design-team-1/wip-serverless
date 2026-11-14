@@ -1,4 +1,6 @@
-export const SEARCH_VERSION = "v5";
+import { MAX_CURSOR_LENGTH } from "./constants.js";
+
+export const SEARCH_VERSION = "v6";
 
 /**
  * UTF-8 문자열을 Base64로 인코딩
@@ -56,11 +58,19 @@ function parseCursorPayload(cursorStr) {
  * @param {number} params.limit
  * @param {number} params.score
  * @param {number} params.rowid
+ * @param {string} [params.dataVersion="default"]
  * @returns {string}
  */
-export function encodeCursor({ canonicalQuery, limit, score, rowid }) {
+export function encodeCursor({
+  canonicalQuery,
+  limit,
+  score,
+  rowid,
+  dataVersion = "default",
+}) {
   const payload = {
     v: SEARCH_VERSION,
+    d: dataVersion,
     q: canonicalQuery,
     l: limit,
     b: score,
@@ -77,13 +87,19 @@ export function encodeCursor({ canonicalQuery, limit, score, rowid }) {
  * @param {string} cursorStr
  * @param {string} canonicalQuery
  * @param {number} limit
+ * @param {string} [dataVersion="default"]
  * @returns {{ valid: boolean, reason?: string, data?: { score: number, rowid: number } }}
  */
-export function decodeAndValidateCursor(cursorStr, canonicalQuery, limit) {
+export function decodeAndValidateCursor(
+  cursorStr,
+  canonicalQuery,
+  limit,
+  dataVersion = "default",
+) {
   const isCursorMissing = !cursorStr || typeof cursorStr !== "string";
 
-  if (isCursorMissing) {
-    return { valid: false, reason: "Cursor가 비어 있습니다." };
+  if (isCursorMissing || cursorStr.length > MAX_CURSOR_LENGTH) {
+    return { valid: false, reason: "Cursor가 비어 있거나 너무 깁니다." };
   }
 
   const parsed = parseCursorPayload(cursorStr);
@@ -100,25 +116,38 @@ export function decodeAndValidateCursor(cursorStr, canonicalQuery, limit) {
     return { valid: false, reason: "지원되지 않는 Cursor 버전입니다." };
   }
 
+  if (parsed.d !== dataVersion) {
+    return {
+      valid: false,
+      reason: "검색 데이터가 변경되었습니다. 처음부터 다시 검색해주세요.",
+    };
+  }
+
   const isQueryMismatch = parsed.q !== canonicalQuery;
 
   if (isQueryMismatch) {
-    return { valid: false, reason: "검색어가 변경되어 Cursor를 사용할 수 없습니다." };
+    return {
+      valid: false,
+      reason: "검색어가 변경되어 Cursor를 사용할 수 없습니다.",
+    };
   }
 
   const isLimitMismatch = parsed.l !== limit;
 
   if (isLimitMismatch) {
-    return { valid: false, reason: "limit이 변경되어 Cursor를 사용할 수 없습니다." };
+    return {
+      valid: false,
+      reason: "limit이 변경되어 Cursor를 사용할 수 없습니다.",
+    };
   }
 
-  const isScoreInvalid = typeof parsed.b !== "number" || Number.isNaN(parsed.b);
+  const isScoreInvalid = !Number.isFinite(parsed.b);
 
   if (isScoreInvalid) {
     return { valid: false, reason: "Cursor의 점수 정보가 유효하지 않습니다." };
   }
 
-  const isRowidInvalid = typeof parsed.r !== "number" || Number.isNaN(parsed.r);
+  const isRowidInvalid = !Number.isSafeInteger(parsed.r) || parsed.r <= 0;
 
   if (isRowidInvalid) {
     return { valid: false, reason: "Cursor의 rowid 정보가 유효하지 않습니다." };

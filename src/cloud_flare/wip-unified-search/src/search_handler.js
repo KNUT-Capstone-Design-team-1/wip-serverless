@@ -3,6 +3,7 @@ import * as UnifiedSearchService from "./unified_search.js";
 import { DEFAULT_LIMIT } from "./constants.js";
 import {
   getCacheKeyString,
+  getDataVersion,
   findCachedData,
   saveCacheData,
   RESPONSE_CACHE_MAX_AGE_SECONDS,
@@ -19,7 +20,7 @@ function parseLimit(url) {
   const hasLimitParam = limitStr !== null;
 
   if (hasLimitParam) {
-    return parseInt(limitStr, 10);
+    return /^\d+$/.test(limitStr) ? Number(limitStr) : NaN;
   }
 
   return DEFAULT_LIMIT;
@@ -38,8 +39,9 @@ export async function handleSearchRequest(request, env, ctx) {
   const keywords = url.searchParams.getAll("keyword");
   const cursor = url.searchParams.get("cursor");
   const limit = parseLimit(url);
+  const dataVersion = getDataVersion(env);
 
-  const validateResult = validate(keywords, limit, cursor);
+  const validateResult = validate(keywords, limit, cursor, dataVersion);
 
   const isInvalidRequest = !validateResult.valid;
 
@@ -47,16 +49,18 @@ export async function handleSearchRequest(request, env, ctx) {
     return new Response(validateResult.reason, { status: 400 });
   }
 
-  const cacheKeyStr = getCacheKeyString(
+  const cacheKeyStr = await getCacheKeyString(
     validateResult.canonicalQuery,
     limit,
     cursor,
+    dataVersion,
   );
 
-  const { data: cachedData, source } = await findCachedData(
-    cacheKeyStr,
-    env,
-  );
+  const {
+    data: cachedData,
+    source,
+    maxAge,
+  } = await findCachedData(cacheKeyStr, env);
 
   const isCacheHit = Boolean(cachedData);
 
@@ -65,7 +69,7 @@ export async function handleSearchRequest(request, env, ctx) {
       status: 200,
       headers: {
         "Content-Type": "application/json",
-        "Cache-Control": `public, max-age=${RESPONSE_CACHE_MAX_AGE_SECONDS}`,
+        "Cache-Control": `private, max-age=${maxAge}`,
         "X-Cache-Status": `HIT (${source})`,
       },
     });
@@ -78,6 +82,7 @@ export async function handleSearchRequest(request, env, ctx) {
     canonicalQuery: validateResult.canonicalQuery,
     limit,
     cursorData: validateResult.cursorData,
+    dataVersion,
   });
 
   const responseBody = JSON.stringify(searchResult);
@@ -85,7 +90,7 @@ export async function handleSearchRequest(request, env, ctx) {
     status: 200,
     headers: {
       "Content-Type": "application/json",
-      "Cache-Control": `public, max-age=${RESPONSE_CACHE_MAX_AGE_SECONDS}`,
+      "Cache-Control": `private, max-age=${RESPONSE_CACHE_MAX_AGE_SECONDS}`,
       "X-Cache-Status": "MISS",
     },
   });
