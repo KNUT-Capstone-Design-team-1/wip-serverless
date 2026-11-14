@@ -19,18 +19,18 @@ function getKvInstance(env) {
 }
 
 /**
- * KV 캐시 조회
+ * 직렬화된 JSON 응답 조회 (손상 여부 검증 후 응답 재직렬화 생략)
  * @param {string} cacheKeyStr
  * @param {Object} [env]
- * @returns {Promise<{ data: Object|null, source: 'KV'|null }>}
+ * @returns {Promise<{ data: string|null, source: 'KV'|null }>}
  */
 export async function findCachedData(cacheKeyStr, env = {}) {
   const kv = getKvInstance(env);
 
   if (kv) {
     try {
-      const data = await kv.get(cacheKeyStr, "json");
-      if (data) {
+      const data = await kv.get(cacheKeyStr, "text");
+      if (data && JSON.parse(data)) {
         return { data, source: "KV" };
       }
     } catch (error) {
@@ -44,7 +44,7 @@ export async function findCachedData(cacheKeyStr, env = {}) {
 /**
  * KV 캐시 저장 (Workers context가 있으면 백그라운드에서 처리)
  * @param {string} cacheKeyStr
- * @param {Object} data
+ * @param {Object|string} data 응답 객체 또는 직렬화된 JSON
  * @param {Object} [env]
  * @param {Object} [ctx]
  */
@@ -56,7 +56,7 @@ export async function saveCacheData(cacheKeyStr, data, env = {}, ctx = null) {
   }
 
   const task = kv
-    .put(cacheKeyStr, JSON.stringify(data), {
+    .put(cacheKeyStr, typeof data === "string" ? data : JSON.stringify(data), {
       expirationTtl: KV_CACHE_TTL_SECONDS,
     })
     .catch((error) => console.error("KV cache save error:", error));

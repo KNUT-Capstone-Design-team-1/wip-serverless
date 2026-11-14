@@ -1,3 +1,5 @@
+import { findCachedNotices, saveCachedNotices, invalidateNoticeCache, createNoticeResponse } from "./cache.js";
+
 /**
  * 공지사항 생성
  * @param {Request} request 요청 객체
@@ -12,7 +14,12 @@ export async function createNotice(request, env) {
     return new Response("Bad Request", { status: 400 });
   }
 
-  const payload = await request.json();
+  let payload;
+  try {
+    payload = await request.json();
+  } catch {
+    return new Response("Bad Request", { status: 400 });
+  }
   if (!payload) {
     console.log(`[CREATE-NOTICE] No payload`);
     return new Response("Bad Request", { status: 400 });
@@ -30,8 +37,9 @@ export async function createNotice(request, env) {
 
   const sql = `INSERT INTO Notices (idx, title, contents, mustRead, createDate, updateDate)
                  VALUES ((SELECT IFNULL(MAX(idx), 0) + 1 FROM Notices), ?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)`;
-  const statement = env.D1.prepare(sql).bind(title, contents, mustRead);
+  const statement = env.D1.prepare(sql).bind(title, contents, Number(mustRead));
   await env.D1.batch([statement]);
+  await invalidateNoticeCache(env);
 
   return new Response("Created", { status: 201 });
 }
@@ -42,27 +50,36 @@ export async function createNotice(request, env) {
  * @param {Object} env workers 환경
  * @returns
  */
-export async function readNotices(request, env) {
+export async function readNotices(request, env, ctx) {
   const queryParams = new URL(request.url).searchParams;
 
-  const mustRead = queryParams.get("mustRead") || null;
-  const skip = queryParams.get("skip") || 0;
-  const limit = parseInt(queryParams.get("limit"), 10) || 10;
+  const mustRead = Boolean(queryParams.get("mustRead"));
+  const skip = Number(queryParams.get("skip") || 0);
+  const requestedLimit = Number(queryParams.get("limit") || 10);
+  const limit = requestedLimit === 0 ? 10 : requestedLimit;
+
+  if (!Number.isSafeInteger(skip) || skip < 0 || !Number.isSafeInteger(limit) || limit < 1) {
+    return new Response("Bad Request", { status: 400 });
+  }
 
   if (limit > 10) {
     return new Response("Content Too Large", { status: 413 });
   }
 
+  const { key, data } = await findCachedNotices(env, { mustRead, skip, limit });
+  if (data) return createNoticeResponse(data, true);
+
   const sql = `SELECT idx, title, contents, mustRead, createDate, updateDate
                  FROM Notices
                  ${mustRead ? "WHERE mustRead = 1" : ""}
-                 ORDER BY idx LIMIT ?,?`;
-  const statement = env.D1.prepare(sql).bind(skip, limit);
-  const notices = (await env.D1.batch([statement]))?.[0]?.results;
+                 ORDER BY idx LIMIT ? OFFSET ?`;
+  const statement = env.D1.prepare(sql).bind(limit, skip);
 
-  const countSql = `SELECT COUNT(idx) AS cnt FROM Notices ${mustRead ? "WHERE mustRead = 1" : ""}`;
+  const countSql = `SELECT COUNT(*) AS cnt FROM Notices ${mustRead ? "WHERE mustRead = 1" : ""}`;
   const countStatement = env.D1.prepare(countSql);
-  const total = (await env.D1.batch([countStatement]))?.[0]?.results?.[0]?.cnt;
+  const [page, count] = await env.D1.batch([statement, countStatement]);
+  const result = { success: true, notices: page.results, total: count.results[0].cnt };
+  await saveCachedNotices(env, key, result, ctx);
 
-  return Response.json({ success: true, notices, total });
+  return createNoticeResponse(result, false);
 }

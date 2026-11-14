@@ -9,7 +9,7 @@
  */
 import * as NoticesAPIHandler from "./src/notices.js";
 import * as NoticesIDXAPIHandler from "./src/notices_idx.js";
-import { verifyToken } from "./src/authentication.js";
+import { verifyToken, verifyAdminToken } from "./src/authentication.js";
 
 /**
  * 공지사항 API 요청
@@ -17,13 +17,13 @@ import { verifyToken } from "./src/authentication.js";
  * @param {*} env workers 환경 객체
  * @returns
  */
-async function requestNoticesApi(request, env) {
+async function requestNoticesApi(request, env, ctx) {
   switch (request.method.toUpperCase()) {
     case "POST":
       return NoticesAPIHandler.createNotice(request, env);
 
     case "GET":
-      return NoticesAPIHandler.readNotices(request, env);
+      return NoticesAPIHandler.readNotices(request, env, ctx);
 
     default:
       return new Response("Bad Request", { status: 400 });
@@ -41,7 +41,7 @@ async function requestNoticesIdxApi(request, env) {
   const pathParts = path.split("/").filter(Boolean);
   const idx = parseInt(pathParts[1], 10);
 
-  if (!idx) {
+  if (!Number.isSafeInteger(idx) || idx < 1) {
     console.log(`[REQUEST-NOTICES-IDX-API] No idx`);
     return new Response("Bad Request", { status: 400 });
   }
@@ -59,7 +59,7 @@ async function requestNoticesIdxApi(request, env) {
 }
 
 export default {
-  async fetch(request, env, _ctx) {
+  async fetch(request, env, ctx) {
     const token = request.headers.get("x-auth-token");
 
     if (!token) {
@@ -73,12 +73,25 @@ export default {
     }
 
     const { pathname } = new URL(request.url);
+    const method = request.method.toUpperCase();
+    const isCollection = /^\/notices\/?$/.test(pathname);
+    const isItem = /^\/notices\/\d+$/.test(pathname);
+    const isWrite = (isCollection && method === "POST") ||
+      (isItem && (method === "PUT" || method === "DELETE"));
 
-    if (/^\/notices\/?$/.test(pathname)) {
-      return requestNoticesApi(request, env);
+    // Check authorization before parsing a body or accessing D1/KV.
+    if (isWrite && !(await verifyAdminToken(request.headers.get("x-admin-token"), env))) {
+      return new Response("Forbidden", {
+        status: 403,
+        headers: { "Cache-Control": "no-store" },
+      });
     }
 
-    if (/^\/notices\/\d+$/.test(pathname)) {
+    if (isCollection) {
+      return requestNoticesApi(request, env, ctx);
+    }
+
+    if (isItem) {
       return requestNoticesIdxApi(request, env);
     }
 

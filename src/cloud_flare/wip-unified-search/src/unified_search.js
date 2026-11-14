@@ -59,10 +59,7 @@ function buildSearchQueryAndParams(matchQuery, fetchLimit, cursorData) {
           rank AS score
         FROM unified_search_fts
         WHERE unified_search_fts MATCH ?
-          AND (
-            rank > ?
-            OR (rank = ? AND unified_search_fts.rowid > ?)
-          )
+          AND (rank, unified_search_fts.rowid) > (?, ?)
         ORDER BY
           rank ASC,
           unified_search_fts.rowid ASC
@@ -76,7 +73,6 @@ function buildSearchQueryAndParams(matchQuery, fetchLimit, cursorData) {
 
     const paramsWithCursor = [
       matchQuery,
-      cursorData.score,
       cursorData.score,
       cursorData.rowid,
       fetchLimit,

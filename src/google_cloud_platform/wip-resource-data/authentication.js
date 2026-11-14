@@ -4,13 +4,16 @@ const fs = require("fs");
 const path = require("path");
 const NodeRSA = require("node-rsa");
 
+dayjs.extend(utc);
+let rsa;
+
 /**
  * auth header로 부터 토큰을 추출
  * @param {String} authHeader
  * @returns
  */
 function getToken(authHeader) {
-  return authHeader.startsWith("Bearer ")
+  return typeof authHeader === "string" && authHeader.startsWith("Bearer ")
     ? authHeader.substring(7, authHeader.length)
     : null;
 }
@@ -21,13 +24,17 @@ function getToken(authHeader) {
  * @returns
  */
 function authenticateRSA(token) {
-  const rsaPrvKey = fs.readFileSync(path.resolve("./rsa_prv_key"), "utf-8");
-
-  const encryptDate = new NodeRSA(rsaPrvKey).decrypt(token, "utf8");
-
-  dayjs.extend(utc);
+  if (!rsa) {
+    const rsaPrvKey = fs.readFileSync(path.resolve("./rsa_prv_key"), "utf-8");
+    rsa = new NodeRSA(rsaPrvKey);
+  }
+  const encryptDate = rsa.decrypt(token, "utf8");
   const now = dayjs.utc();
-  const expireDate = dayjs.utc(encryptDate).add(10, "minute");
+  const issuedAt = dayjs.utc(encryptDate);
+  if (!issuedAt.isValid() || issuedAt.valueOf() - now.valueOf() > 30 * 1000) {
+    return false;
+  }
+  const expireDate = issuedAt.add(10, "minute");
 
   return now.isBefore(expireDate);
 }
@@ -42,12 +49,11 @@ function authenticate(req) {
     return false;
   }
 
-  const authenticate = authenticateRSA(token);
-  if (!authenticate) {
+  try {
+    return authenticateRSA(token);
+  } catch {
     return false;
   }
-
-  return true;
 }
 
 module.exports = { authenticate };

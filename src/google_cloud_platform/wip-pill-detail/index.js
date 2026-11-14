@@ -3,7 +3,17 @@ const functions = require("@google-cloud/functions-framework");
 const compression = require("compression");
 const express = require("express");
 const axios = require("axios");
+const http = require("node:http");
+const https = require("node:https");
 const { authenticate } = require("./authentication");
+const { CACHE_SECONDS, createResponseCache } = require("./cache");
+
+const responseCache = createResponseCache();
+const api = axios.create({
+  timeout: 8000,
+  httpAgent: new http.Agent({ keepAlive: true, maxSockets: 64 }),
+  httpsAgent: new https.Agent({ keepAlive: true, maxSockets: 64 }),
+});
 
 const app = express();
 
@@ -23,9 +33,11 @@ async function executeFallbackAction(req) {
   const baseUrl = `https://nedrug.mfds.go.kr/pbp/cmn/xml/drb/${ITEM_SEQ}`;
   try {
     // 대체 url 의약품안전나라
-    const EE = await axios.get(`${baseUrl}/EE`);
-    const UD = await axios.get(`${baseUrl}/UD`);
-    const NB = await axios.get(`${baseUrl}/NB`);
+    const [EE, UD, NB] = await Promise.all([
+      api.get(`${baseUrl}/EE`),
+      api.get(`${baseUrl}/UD`),
+      api.get(`${baseUrl}/NB`),
+    ]);
 
     const nedrugData = {
       EE_DOC_DATA: EE.data,
@@ -70,8 +82,8 @@ async function requestToAPI(req) {
       throw new Error(`Invalid query ${ITEM_SEQ}`);
     }
 
-    const result = await axios.get(
-      `${API_URL}&serviceKey=${ENC_SERVICE_KEY}&item_seq=${ITEM_SEQ}`,
+    const result = await api.get(
+      `${API_URL}&serviceKey=${ENC_SERVICE_KEY}&item_seq=${encodeURIComponent(ITEM_SEQ)}`,
     );
 
     const drugDetail = result?.data?.body?.items?.[0];
@@ -81,33 +93,46 @@ async function requestToAPI(req) {
       throw new Error(`Invalid response`);
     }
 
-    return drugDetail;
+    return { data: drugDetail, cacheable: true };
   } catch (e) {
     console.log("Standard API Error", e.stack || e);
 
     const fallbackResult = await executeFallbackAction(req);
 
     if (fallbackResult.success) {
-      return fallbackResult.data;
+      return { data: fallbackResult.data, cacheable: true };
     }
 
     if (axios.isAxiosError(e)) {
-      return getServiceDisableXML();
+      return { data: getServiceDisableXML(), cacheable: false };
     }
 
     throw e;
   }
 }
 
-app.get("/", async (req, res) => {
+app.get("/", async (req, res, next) => {
   if (!authenticate(req)) {
     res.sendStatus(401);
     return;
   }
 
-  const drugDetail = await requestToAPI(req);
+  if (typeof req.query.ITEM_SEQ !== "string" || !/^\d+$/.test(req.query.ITEM_SEQ)) {
+    res.status(400).send("Invalid ITEM_SEQ");
+    return;
+  }
 
-  res.status(200).json(drugDetail);
+  try {
+    const result = await responseCache.getOrLoad(req.query.ITEM_SEQ, async () => {
+      const { data, cacheable } = await requestToAPI(req);
+      return { body: JSON.stringify(data), cacheable };
+    });
+    res.set("Cache-Control", result.cacheable ? `private, max-age=${Math.max(0, CACHE_SECONDS - result.age)}` : "no-store");
+    res.set("X-Cache-Status", result.hit ? "HIT" : "MISS");
+    res.status(200).type("json").send(result.body);
+  } catch (error) {
+    next(error);
+  }
 });
 
 functions.http("wip-pill-detail", app);

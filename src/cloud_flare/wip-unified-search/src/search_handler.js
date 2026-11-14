@@ -61,7 +61,7 @@ export async function handleSearchRequest(request, env, ctx) {
   const isCacheHit = Boolean(cachedData);
 
   if (isCacheHit) {
-    return new Response(JSON.stringify(cachedData), {
+    return new Response(cachedData, {
       status: 200,
       headers: {
         "Content-Type": "application/json",
@@ -80,7 +80,8 @@ export async function handleSearchRequest(request, env, ctx) {
     cursorData: validateResult.cursorData,
   });
 
-  const response = new Response(JSON.stringify(searchResult), {
+  const responseBody = JSON.stringify(searchResult);
+  const response = new Response(responseBody, {
     status: 200,
     headers: {
       "Content-Type": "application/json",
@@ -89,7 +90,7 @@ export async function handleSearchRequest(request, env, ctx) {
     },
   });
 
-  await saveCacheData(cacheKeyStr, searchResult, env, ctx);
+  await saveCacheData(cacheKeyStr, responseBody, env, ctx);
 
   return response;
 }

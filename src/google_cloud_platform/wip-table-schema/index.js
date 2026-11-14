@@ -1,88 +1,26 @@
 const functions = require("@google-cloud/functions-framework");
-const compression = require("compression");
 const express = require("express");
 const { authenticate } = require("./authentication");
-const pillDataSchema = require("./schemas/pill_data.json");
-const markImagesSchema = require("./schemas/mark_images.json");
-const nearbyPharmaciesSchema = require("./schemas/nearby_pharmacies.json");
-const cannabisSchema = require("./schemas/cannabis.json");
-const narcoticsSchema = require("./schemas/narcotics.json");
-const psychotropicsSchema = require("./schemas/psychotropics.json");
-const prohibitedListSchema = require("./schemas/prohibited_list.json");
-const functionalFoodNutrientsSchema = require("./schemas/functional_food_nutrients.json");
-const functionalFoodClassificationSchema = require("./schemas/functional_food_classification.json");
-const healthFunctionalFoodRawMaterialSchema = require("./schemas/health_functional_food_raw_material.json");
+const { createJsonResponse, sendJsonResponse } = require("./response");
+
+// Serialize once per instance; compressed variants are generated lazily and reused.
+const schemas = new Map([
+  "pill_data", "mark_images", "nearby_pharmacies", "cannabis", "narcotics",
+  "psychotropics", "prohibited_list", "functional_food_nutrients",
+  "functional_food_classification", "health_functional_food_raw_material",
+].map((table) => [table, createJsonResponse({ columns: require("./schemas/" + table + ".json").columns })]));
 
 const app = express();
 
-app.use(
-  compression({
-    threshold: 1024, // 1KB 이상만 압축
-  }),
-);
-
-/**
- * 테이블의 스키마를 반환
- * @param {String} table 테이블 이름
- * @returns
- */
-function getTableSchema(table) {
-  switch (table) {
-    case "pill_data":
-      return { success: true, columns: pillDataSchema.columns };
-
-    case "mark_images":
-      return { success: true, columns: markImagesSchema.columns };
-
-    case "nearby_pharmacies":
-      return { success: true, columns: nearbyPharmaciesSchema.columns };
-
-    case "cannabis":
-      return { success: true, columns: cannabisSchema.columns };
-
-    case "narcotics":
-      return { success: true, columns: narcoticsSchema.columns };
-
-    case "psychotropics":
-      return { success: true, columns: psychotropicsSchema.columns };
-
-    case "prohibited_list":
-      return { success: true, columns: prohibitedListSchema.columns };
-
-    case "functional_food_nutrients":
-      return { success: true, columns: functionalFoodNutrientsSchema.columns };
-
-    case "functional_food_classification":
-      return {
-        success: true,
-        columns: functionalFoodClassificationSchema.columns,
-      };
-
-    case "health_functional_food_raw_material":
-      return {
-        success: true,
-        columns: healthFunctionalFoodRawMaterialSchema.columns,
-      };
-
-    default:
-      return { success: false, message: "Invalid Table Name" };
+app.get("/", async (req, res, next) => {
+  if (!authenticate(req)) return res.sendStatus(401);
+  const response = schemas.get(req.query.table);
+  if (!response) return res.status(500).send("Invalid Table Name");
+  try {
+    await sendJsonResponse(req, res, response);
+  } catch (error) {
+    next(error);
   }
-}
-
-app.get("/", (req, res) => {
-  if (!authenticate(req)) {
-    res.sendStatus(401);
-    return;
-  }
-
-  const result = getTableSchema(req.query.table);
-
-  if (!result.success) {
-    res.status(500).send(result.message);
-    return;
-  }
-
-  res.status(200).json({ columns: result.columns });
 });
 
 functions.http("wip-table-schema", app);
