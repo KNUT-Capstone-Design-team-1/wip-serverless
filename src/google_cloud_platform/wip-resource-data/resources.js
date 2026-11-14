@@ -6,7 +6,7 @@ const CACHE_TTL_MS = 5 * 60 * 1000;
 
 function createResourceStore(storage, {
   now = Date.now,
-  manifestPath,
+  manifestPath = "resource-pages/latest.json",
   maxResourceBytes = 64 * 1024 * 1024,
   maxResponseBytes = 16 * 1024 * 1024,
 } = {}) {
@@ -45,28 +45,31 @@ function createResourceStore(storage, {
       manifestTask = storage.bucket("wip-bucket").file(manifestPath).download({ decompress: false })
         .then(([contents]) => {
           const hash = createHash("sha256").update(contents).digest("hex");
-          if (manifestPath !== `resource-pages/manifests/${hash}.json`) {
-            throw new Error("Invalid resource manifest checksum");
-          }
-          return validateManifest(JSON.parse(contents.toString("utf8")));
+          return { hash, data: validateManifest(JSON.parse(contents.toString("utf8"))) };
         })
-        .catch((error) => { manifestTask = undefined; throw error; });
+        .catch((error) => {
+          if (Number(error.code) === 404) return null;
+          throw error;
+        })
+        .finally(() => { manifestTask = undefined; });
     }
     return manifestTask;
   }
 
-  async function load(table) {
-    const cached = resources.get(table);
+  async function load(table, generation) {
+    const key = `${table}:${generation}`;
+    const cached = resources.get(key);
     if (cached && cached.expiresAt > now()) {
-      resources.delete(table);
-      resources.set(table, cached);
+      resources.delete(key);
+      resources.set(key, cached);
       return cached;
     }
-    if (cached) removeResource(table);
-    if (pending.has(table)) return pending.get(table);
+    if (cached) removeResource(key);
+    if (pending.has(key)) return pending.get(key);
 
     const task = (async () => {
-      const [contents] = await storage.bucket("wip-bucket").file(`${table}.json`).download();
+      const [contents] = await storage.bucket("wip-bucket")
+        .file(`${table}.json`, { generation }).download();
       const data = JSON.parse(contents.toString("utf8"));
       if (!Array.isArray(data.resources)) throw new Error("Invalid resource data");
       const entry = { resources: data.resources, size: contents.length * 2,
@@ -75,17 +78,17 @@ function createResourceStore(storage, {
         while (resources.size >= 10 || resourceBytes + entry.size > maxResourceBytes) {
           removeResource(resources.keys().next().value);
         }
-        resources.set(table, entry);
+        resources.set(key, entry);
         resourceBytes += entry.size;
       }
       return entry;
-    })().finally(() => pending.delete(table));
-    pending.set(table, task);
+    })().finally(() => pending.delete(key));
+    pending.set(key, task);
     return task;
   }
 
-  async function buildResponse(table, page, limit, key) {
-    const manifest = await readManifest();
+  async function buildResponse(table, page, limit, key, source) {
+    const manifest = source.manifest?.data;
     const tableEntry = manifest && Object.hasOwn(manifest.tables, table) ? manifest.tables[table] : undefined;
     const pages = tableEntry?.pages[limit];
     if (pages) {
@@ -112,7 +115,7 @@ function createResourceStore(storage, {
       const resource = [];
       for (let offset = current; offset < end;) {
         const basePage = Math.floor(offset / baseLimit) + 1;
-        const baseResponse = await getResponse(table, basePage, baseLimit);
+        const baseResponse = await getSnapshotResponse(table, basePage, baseLimit, source);
         const data = JSON.parse((await baseResponse.getEncoded("identity")).toString("utf8"));
         const start = offset % baseLimit;
         const count = Math.min(baseLimit - start, end - offset);
@@ -125,7 +128,7 @@ function createResourceStore(storage, {
     }
 
     // Unprepared tables retain the original API behavior.
-    const entry = await load(table);
+    const entry = await load(table, source.generation);
     const current = (page - 1) * limit;
     const total = entry.resources.length;
     return {
@@ -138,8 +141,20 @@ function createResourceStore(storage, {
   }
 
   async function getResponse(table, page, limit) {
+    // Revalidate GCS on every request, including requests answered from memory.
+    const manifest = await readManifest();
+    if (manifest && Object.hasOwn(manifest.data.tables, table)) {
+      return getSnapshotResponse(table, page, limit, { manifest, version: manifest.hash });
+    }
+    const [metadata] = await storage.bucket("wip-bucket").file(`${table}.json`).getMetadata();
+    const generation = String(metadata.generation);
+    if (!/^[0-9]+$/.test(generation)) throw new Error("Invalid resource generation");
+    return getSnapshotResponse(table, page, limit, { generation, version: `raw:${generation}` });
+  }
+
+  async function getSnapshotResponse(table, page, limit, source) {
     // Check pages BEFORE loading the table: large tables may not fit the resource cache.
-    const key = `${table}:${page}:${limit}`;
+    const key = `${source.version}:${table}:${page}:${limit}`;
     const cached = responses.get(key);
     if (cached && cached.expiresAt > now()) {
       responses.delete(key);
@@ -148,7 +163,7 @@ function createResourceStore(storage, {
     }
     if (cached) removeResponse(key);
     if (pendingResponses.has(key)) return pendingResponses.get(key);
-    const task = buildResponse(table, page, limit, key).then((entry) => {
+    const task = buildResponse(table, page, limit, key, source).then((entry) => {
       entry.size = entry.response.size;
       if (entry.size <= maxResponseBytes) {
         responses.set(key, entry);
