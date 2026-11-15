@@ -18,6 +18,16 @@ function createResourceStore(storage, {
   let responseBytes = 0;
   let manifestTask;
 
+  async function downloadResource(objectPath, options) {
+    const bucket = storage.bucket("wip-bucket");
+    try {
+      return await bucket.file(objectPath).download(options);
+    } catch (error) {
+      if (Number(error.code) !== 404) throw error;
+      return bucket.file(`resources/${objectPath}`).download(options);
+    }
+  }
+
   function removeResource(key) {
     resourceBytes -= resources.get(key).size;
     resources.delete(key);
@@ -42,7 +52,7 @@ function createResourceStore(storage, {
   async function readManifest() {
     if (!manifestPath) return null;
     if (!manifestTask) {
-      manifestTask = storage.bucket("wip-bucket").file(manifestPath).download({ decompress: false })
+      manifestTask = downloadResource(manifestPath, { decompress: false })
         .then(([contents]) => {
           const hash = createHash("sha256").update(contents).digest("hex");
           if (manifestPath !== `resource-pages/manifests/${hash}.json`) {
@@ -66,7 +76,7 @@ function createResourceStore(storage, {
     if (pending.has(table)) return pending.get(table);
 
     const task = (async () => {
-      const [contents] = await storage.bucket("wip-bucket").file(`${table}.json`).download();
+      const [contents] = await downloadResource(`${table}.json`);
       const data = JSON.parse(contents.toString("utf8"));
       if (!Array.isArray(data.resources)) throw new Error("Invalid resource data");
       const entry = { resources: data.resources, size: contents.length * 2,
@@ -93,7 +103,7 @@ function createResourceStore(storage, {
       const response = prepared ? createStoredResponse(prepared, async (encoding) => {
         const file = prepared.files[encoding];
         // Avoid GCS automatically decompressing the prebuilt response.
-        const [body] = await storage.bucket("wip-bucket").file(file.path).download({ decompress: false });
+        const [body] = await downloadResource(file.path, { decompress: false });
         if (body.length !== file.bytes || createHash("sha256").update(body).digest("hex") !== file.sha256) {
           throw new Error("Resource page checksum mismatch");
         }
