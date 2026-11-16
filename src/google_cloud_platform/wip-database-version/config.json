@@ -1,42 +1,38 @@
 {
   "pill_data": {
     "schemaVersion": 20261107,
-    "dataVersion": 20261109
+    "dataVersion": 20261116
   },
   "mark_images": {
     "schemaVersion": 20260530,
-    "dataVersion": 20261109
+    "dataVersion": 20261116
   },
   "nearby_pharmacies": {
     "schemaVersion": 20260921,
-    "dataVersion": 20261102
+    "dataVersion": 20261116
   },
   "cannabis": {
     "schemaVersion": 20260530,
-    "dataVersion": 20261102
+    "dataVersion": 20261116
   },
   "narcotics": {
     "schemaVersion": 20260530,
-    "dataVersion": 20261102
+    "dataVersion": 20261116
   },
   "psychotropics": {
     "schemaVersion": 20260530,
-    "dataVersion": 20261102
+    "dataVersion": 20261116
   },
   "prohibited_list": {
     "schemaVersion": 20260530,
-    "dataVersion": 20261102
-  },
-  "functional_food_nutrients": {
-    "schemaVersion": 20260912,
-    "dataVersion": 20261102
+    "dataVersion": 20261116
   },
   "functional_food_classification": {
     "schemaVersion": 20261107,
-    "dataVersion": 20261107
+    "dataVersion": 20261116
   },
   "health_functional_food_raw_material": {
     "schemaVersion": 20261107,
-    "dataVersion": 20261107
+    "dataVersion": 20261116
   }
 }
