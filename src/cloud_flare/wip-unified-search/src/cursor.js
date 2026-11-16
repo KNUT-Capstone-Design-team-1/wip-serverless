@@ -1,6 +1,6 @@
 import { MAX_CURSOR_LENGTH } from "./constants.js";
 
-export const SEARCH_VERSION = "v6";
+export const SEARCH_VERSION = "v7";
 
 /**
  * UTF-8 문자열을 Base64로 인코딩

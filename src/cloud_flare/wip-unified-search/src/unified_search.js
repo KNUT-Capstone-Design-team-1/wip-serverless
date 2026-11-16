@@ -1,5 +1,6 @@
 import { encodeCursor } from "./cursor.js";
 import { DEFAULT_LIMIT } from "./constants.js";
+import { expandSearchToken } from "./query_expansion.js";
 
 // NAME, INGREDIENT, INDICATION, APPEARANCE, COMPANY (deployer v2 core FTS).
 const RANK_FUNCTION = "bm25(8.0, 5.0, 10.0, 2.0, 1.0)";
@@ -27,14 +28,14 @@ function buildMatchQuery(keywords) {
 
   // 1글자 단어는 불필요한 대량 스캔을 방지하기 위해 완전일치, 2글자 이상은 prefix 매칭
   const escapedTokens = keywords.map((token) => {
-    const escaped = escapeFtsToken(token);
-    const isSingleChar = token.length === 1;
-
-    if (isSingleChar) {
-      return escaped;
-    }
-
-    return `${escaped}*`;
+    const alternatives = expandSearchToken(token).map((variant) => {
+      const escaped = escapeFtsToken(variant);
+      return variant.length === 1 ? escaped : `${escaped}*`;
+    });
+    // 한 검색어의 대체 표현만 OR로 묶고, 다른 검색어와의 AND 조건은 유지한다.
+    return alternatives.length === 1
+      ? alternatives[0]
+      : `(${alternatives.join(" OR ")})`;
   });
 
   return escapedTokens.join(" AND ");

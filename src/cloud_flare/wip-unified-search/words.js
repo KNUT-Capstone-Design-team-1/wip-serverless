@@ -1,4 +1,6 @@
 const wordData = {
+  // 같은 질환의 일상 표현/공식 표기를 OR 조건으로 함께 검색한다.
+  synonymGroups: [["독감", "인플루엔자", "influenza"]],
   // 검색 대상을 설명하는 표현은 실제 MATCH 조건에 넣지 않는다.
   queryWords: [
     "약",
