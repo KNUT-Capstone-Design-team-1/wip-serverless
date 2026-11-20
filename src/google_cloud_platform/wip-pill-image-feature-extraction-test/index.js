@@ -62,4 +62,4 @@ app.post("/", async (req, res, next) => {
   }
 });
 
-functions.http("wip-pill-image-feature-extraction", app);
+functions.http("wip-pill-image-feature-extraction-test", app);
