@@ -1,7 +1,7 @@
 const { Type, GoogleGenAI, ThinkingLevel } = require("@google/genai");
 
 const textPart = {
-  text: "Analyze the features of the pill in the provided image(s) (print, shape, and color) and respond in JSON format. If no pill is found or a feature cannot be identified, you must return an empty array `[]` for the corresponding field as required by the schema.",
+  text: 'Analyze the features of the pill in the provided image(s) (print, shape, and color) and respond in JSON format. If no pill is found or a feature cannot be identified, return an empty string `""` for string fields (`PRINT_FRONT`, `PRINT_BACK`) and an empty array `[]` for array fields (`SHAPE`, `COLOR`) as required by the schema.',
 };
 
 const responseSchema = {
@@ -21,6 +21,7 @@ const responseSchema = {
       type: Type.ARRAY,
       items: {
         type: Type.STRING,
+        format: "enum",
         enum: [
           "원형",
           "타원형",
@@ -42,6 +43,7 @@ const responseSchema = {
       type: Type.ARRAY,
       items: {
         type: Type.STRING,
+        format: "enum",
         enum: [
           "하양",
           "노랑",
@@ -76,12 +78,13 @@ const systemPrompt = {
   Follow these instructions precisely for each field defined in the output schema:
   
   1. **PRINT_FRONT**:
-    - Analyze all provided views of the pill to identify any imprinted text, numbers, or symbols.
+    - Analyze the first (front) image of the pill to identify any imprinted text, numbers, or symbols.
     - Only include markings where your recognition confidence is 90% or higher.
   
   2. **PRINT_BACK**:
-    - Analyze all provided views of the pill to identify any imprinted text, numbers, or symbols.
+    - Analyze the second (back) image of the pill to identify any imprinted text, numbers, or symbols.
     - Only include markings where your recognition confidence is 90% or higher.
+    - If only one image is provided (no back image), return an empty string \`""\`.
   
   3. **SHAPE**:
     - Identify all plausible shapes for the pill based on all views.
@@ -93,7 +96,7 @@ const systemPrompt = {
   
   **Important:**
   - Generate your output strictly according to the attached structured output schema.
-  - If no pill is found in the images, or if a specific attribute is not present (e.g., no print), you must provide an empty list \`[]\` for the corresponding field as required by the schema.`,
+  - If no pill is found in the images, or if a specific attribute is not present, provide an empty string \`""\` for \`PRINT_FRONT\` / \`PRINT_BACK\` and an empty list \`[]\` for \`SHAPE\` / \`COLOR\` as required by the schema.`,
 };
 
 const vertexai = new GoogleGenAI({
@@ -121,10 +124,9 @@ async function requestDetectImageGemini(data) {
       systemInstruction: { parts: [systemPrompt] },
       responseMimeType: "application/json",
       responseSchema: responseSchema,
-      temperature: 0.6,
-      topP: 0.95,
+      seed: 0,
       thinkingConfig: {
-        thinkingLevel: ThinkingLevel.MINIMAL,
+        thinkingLevel: ThinkingLevel.LOW,
       },
     },
   };

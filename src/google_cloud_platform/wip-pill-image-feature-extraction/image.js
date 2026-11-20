@@ -24,7 +24,7 @@ function normalizeImage(value) {
 function prepareImages(body, model) {
   if (!body || (!body.front && !body.back)) throw new Error("Image not received");
   // Bump this version whenever the prompt/schema changes. Front/back order matters.
-  const hash = createHash("sha256").update(JSON.stringify(["pill-features-v1", model || ""]));
+  const hash = createHash("sha256").update(JSON.stringify(["pill-features-v2", model || ""]));
   const images = {};
   for (const side of ["front", "back"]) {
     const image = body[side] ? normalizeImage(body[side]) : null;
