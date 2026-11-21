@@ -20,12 +20,7 @@ function createResourceStore(storage, {
 
   async function downloadResource(objectPath, options) {
     const bucket = storage.bucket("wip-bucket");
-    try {
-      return await bucket.file(objectPath).download(options);
-    } catch (error) {
-      if (Number(error.code) !== 404) throw error;
-      return bucket.file(`resources/${objectPath}`).download(options);
-    }
+    return bucket.file(`resources/${objectPath}`).download(options);
   }
 
   function removeResource(key) {
